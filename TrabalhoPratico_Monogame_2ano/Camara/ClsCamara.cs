@@ -24,7 +24,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _pos = new Vector3(64f, 20f, 64f);
             _pitch = 0;
             _yaw = 0;
-            _verticalOffset = 2f;
+            _verticalOffset = 5f;
             _camaraValue = 0;
         }
 
