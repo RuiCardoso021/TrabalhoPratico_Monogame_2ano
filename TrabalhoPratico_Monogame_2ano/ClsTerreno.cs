@@ -13,26 +13,31 @@ namespace TrabalhoPratico_Monogame_2ano
         private BasicEffect _effect;
         private float _vScale;
         private Texture2D _textureImg;
+        VertexPositionNormalTexture[] vertices;
 
         public float[,] alturas;
         public int w, h;
         public Vector3[,] normais;
+
 
         public ClsTerreno(GraphicsDevice device, Texture2D heightMap, Texture2D texture){
             _textureImg = heightMap;
             _effect = new BasicEffect(device);
 
             //efeitos luz
+            _effect.LightingEnabled = true;
             _effect.EmissiveColor = new Vector3(0.0f, 0.0f, 0.0f);
-            _effect.AmbientLightColor = new Vector3(0.5f, 0.5f, 0.5f);
+            _effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
             _effect.DirectionalLight0.Enabled = true;
             _effect.DirectionalLight0.DiffuseColor = new Vector3(0.5f, 0.5f, 0.5f);
-            _effect.DirectionalLight0.SpecularColor = new Vector3(0.0f, 0.0f, 0.0f);
-            Vector3 lightDirection = new Vector3(-1.0f, 1.0f, -1.0f);
+            _effect.DirectionalLight0.SpecularColor = new Vector3(1.0f, 1.0f, 1.0f);
+            _effect.DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f);
+            _effect.SpecularColor = new Vector3(0.0f, 0.0f, 0.0f);
+            _effect.SpecularPower = 127;
+            Vector3 lightDirection = new Vector3(1.0f, -1f, 1f);
             lightDirection.Normalize();
             _effect.DirectionalLight0.Direction = lightDirection;
-
-
+            _effect.EnableDefaultLighting();
             _effect.TextureEnabled = true;
             _effect.Texture = texture;
             _effect.World = Matrix.Identity;
@@ -49,7 +54,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _vScale = 0.03f;
             alturas = new float[w, h];
             normais = new Vector3[w, h];
-            VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[_vertexCount];
+            vertices = new VertexPositionNormalTexture[_vertexCount];
 
 
             for (int z = 0; z < h; z++)
@@ -59,17 +64,17 @@ namespace TrabalhoPratico_Monogame_2ano
                     int pos = z * w + x;
                     float y = texels[pos].R * _vScale;
                     alturas[x, z] = y;
-                    normais[x, z] = new Vector3(x, y, z);
+                    normais[x, z] = Vector3.UnitY;
                     vertices[pos] = new VertexPositionNormalTexture(new Vector3(x, y, z), Vector3.UnitY, new Vector2(x % 2, z % 2));
                 }
 
             }
 
-            _vertexBuffer = new VertexBuffer(device, typeof(VertexPositionNormalTexture), _vertexCount, BufferUsage.None);
-            _vertexBuffer.SetData<VertexPositionNormalTexture>(vertices);
+            
 
             _indexCount = (w - 1) * h * 2;
             short[] indices = new short[_indexCount];
+            calculateNormal();
 
             for (int strip = 0; strip < w - 1; strip++)
             {
@@ -79,9 +84,70 @@ namespace TrabalhoPratico_Monogame_2ano
                     indices[strip * h * 2 + z * 2 + 1] = (short)(strip + z * w + 1);
                 }
             }
+            _vertexBuffer = new VertexBuffer(device, typeof(VertexPositionNormalTexture), _vertexCount, BufferUsage.None);
+            _vertexBuffer.SetData<VertexPositionNormalTexture>(vertices);
 
             _indexBuffer = new IndexBuffer(device, typeof(short), _indexCount, BufferUsage.None);
             _indexBuffer.SetData<short>(indices);
+        }
+
+        public void calculateNormal()
+        {
+            for (int z = 1; z < h - 1; z++){
+                for (int x = 1; x < w - 1; x++){
+
+                    int i;
+                    i = z * w + x;
+
+                    Vector3 p0 = vertices[i].Position;
+                    Vector3 p1 = vertices[(z - 1) * w + x].Position;
+                    Vector3 p2 = vertices[(z - 1) * w + (x - 1)].Position;
+                    Vector3 p3 = vertices[z * w + (x - 1)].Position;
+                    Vector3 p4 = vertices[(z + 1) * w + (x - 1)].Position;
+                    Vector3 p5 = vertices[(z + 1) * w + x].Position;
+                    Vector3 p6 = vertices[(z + 1) * w + (x + 1)].Position;
+                    Vector3 p7 = vertices[z * w + (x + 1)].Position;
+                    Vector3 p8 = vertices[(z - 1) * w + (x + 1)].Position;
+
+
+                    Vector3 t1 = p1 - p0;
+                    Vector3 t2 = p2 - p0;
+                    Vector3 t3 = p3 - p0;
+                    Vector3 t4 = p4 - p0;
+                    Vector3 t5 = p5 - p0;
+                    Vector3 t6 = p6 - p0;
+                    Vector3 t7 = p7 - p0;
+                    Vector3 t8 = p8 - p0;
+
+
+                    Vector3 n12 = Vector3.Cross(t1, t2);
+                    Vector3 n23 = Vector3.Cross(t2, t3);
+                    Vector3 n34 = Vector3.Cross(t3, t4);
+                    Vector3 n45 = Vector3.Cross(t4, t5);
+                    Vector3 n56 = Vector3.Cross(t5, t6);
+                    Vector3 n67 = Vector3.Cross(t6, t7);
+                    Vector3 n78 = Vector3.Cross(t7, t8);
+                    Vector3 n81 = Vector3.Cross(t8, t1);
+
+
+                    n12.Normalize();
+                    n23.Normalize();
+                    n34.Normalize();
+                    n45.Normalize();
+                    n56.Normalize();
+                    n67.Normalize();
+                    n78.Normalize();
+                    n81.Normalize();
+
+
+                    Vector3 n0 = new Vector3();
+                    n0 = (n12 + n23 + n34 + n45 + n56 + n67 + n78 + n81) / 8;
+                    n0.Normalize();
+                    normais[x,z] = n0;
+
+                    vertices[i].Normal = n0;
+                }
+            }
         }
 
         //funcao para ir buscar o Y aproximado
@@ -154,8 +220,6 @@ namespace TrabalhoPratico_Monogame_2ano
 
             for (int strip = 0; strip < w - 1; strip++)
                 device.DrawIndexedPrimitives(PrimitiveType.TriangleStrip, 0, strip * indexOffset, (h - 1) * 2);
-            
-
         }
     }
 }
