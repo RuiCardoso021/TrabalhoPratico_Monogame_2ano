@@ -23,16 +23,15 @@ namespace TrabalhoPratico_Monogame_2ano
             _effect = new BasicEffect(device);
 
             //efeitos luz
-            //efeitos luz
             _effect.EmissiveColor = new Vector3(0.0f, 0.0f, 0.0f);
-            _effect.AmbientLightColor = new Vector3(0.3f, 0.3f, 0.3f);
+            _effect.AmbientLightColor = new Vector3(0.5f, 0.5f, 0.5f);
             _effect.DirectionalLight0.Enabled = true;
-            _effect.DirectionalLight0.DiffuseColor = new Vector3(0.8f, 0.8f, 0.8f);
+            _effect.DirectionalLight0.DiffuseColor = new Vector3(0.5f, 0.5f, 0.5f);
             _effect.DirectionalLight0.SpecularColor = new Vector3(0.0f, 0.0f, 0.0f);
-            Vector3 lightDirection = new Vector3(1.0f, -1.0f, -1.0f);
+            Vector3 lightDirection = new Vector3(-1.0f, 1.0f, -1.0f);
             lightDirection.Normalize();
             _effect.DirectionalLight0.Direction = lightDirection;
-                
+
 
             _effect.TextureEnabled = true;
             _effect.Texture = texture;

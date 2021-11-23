@@ -123,6 +123,12 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
+                    effect.EnableDefaultLighting();
+                    effect.LightingEnabled = true; // turn on the lighting subsystem.
+                    effect.DirectionalLight0.DiffuseColor = new Vector3(0.5f, 0, 0); // a red light
+                    effect.DirectionalLight0.Direction = new Vector3(1, 0, 0);  // coming along the x-axis
+                    effect.DirectionalLight0.SpecularColor = new Vector3(0, 1, 0);
+
                     effect.World = _boneTransforms[mesh.ParentBone.Index];
                     effect.View = view;
                     effect.Projection = projection;
