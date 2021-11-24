@@ -11,7 +11,7 @@ namespace TrabalhoPratico_Monogame_2ano
         private GraphicsDeviceManager _graphics;
         private ClsTerreno _terreno;
         private ClsCamara _camara;
-        private ClsTank _tank;
+        private ClsTank _tank, _tankEnemy;
         private int _viewMode = 0;
 
         public Game1()
@@ -32,6 +32,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("texture"));
             _camara = new ClsGhostCamera(_graphics.GraphicsDevice);
             _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(30f, 0f, 0f));
+            //_tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(30f, 0f, 30f));
         }
 
         protected override void Update(GameTime gameTime)
@@ -41,6 +42,7 @@ namespace TrabalhoPratico_Monogame_2ano
 
             HandleCamera();
             _tank.Update(gameTime, _terreno);
+            //_tankEnemy.Update(gameTime, _terreno);
 
             base.Update(gameTime);
         }
@@ -51,6 +53,7 @@ namespace TrabalhoPratico_Monogame_2ano
 
             _terreno.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection);
             _tank.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection);
+            //_tankEnemy.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection);
             base.Draw(gameTime);
         }
         

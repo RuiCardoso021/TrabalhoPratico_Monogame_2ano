@@ -6,8 +6,7 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
 {
     class ClsTank
     {
-        private const float speed = 5f;
-
+        private float speed = 5f;
         private Model _tankModel;
         private ModelBone _torreBone,
             _canhaoBone,
@@ -22,11 +21,16 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _cannonTransform,
             _scale,
             _leftSteerDefaultTransform,
-            _rightSteerDefaultTransform;
+            _rightSteerDefaultTransform,
+            _leftBackWheelBoneTransform,
+            _rightBackWheelBoneTransform,
+            _leftFrontWheelBoneTransform,
+            _rightFrontWheelBoneTransform;
         private Matrix[] _boneTransforms;
-        private float _stearAngle;
         public Vector3 _pos;
-        private float _yaw;
+        private float _yaw, _yaw_canhao, _yaw_torre, _yaw_wheel;
+        public Vector3 direcaoCorrigida;
+        public Vector3 normal;
 
 
         public ClsTank(GraphicsDevice device, Model modelo, Vector3 position)
@@ -45,10 +49,15 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _hatchBone = _tankModel.Bones["hatch_geo"];
 
             // Read bone default transforms
-            _leftSteerDefaultTransform = _leftSteerBone.Transform;
-            _rightSteerDefaultTransform = _rightSteerBone.Transform;
-            _turretTransform = _torreBone.Transform;
-            _cannonTransform = _canhaoBone.Transform;
+            _leftBackWheelBoneTransform     = _leftBackWheelBone.Transform;
+            _rightBackWheelBoneTransform    = _rightBackWheelBone.Transform;
+            _leftFrontWheelBoneTransform    = _leftFrontWheelBone.Transform;
+            _rightFrontWheelBoneTransform   = _rightFrontWheelBone.Transform;
+            _leftSteerDefaultTransform      = _leftSteerBone.Transform;
+            _rightSteerDefaultTransform     = _rightSteerBone.Transform;
+            _turretTransform                = _torreBone.Transform;
+            _cannonTransform                = _canhaoBone.Transform;
+            
 
             // create array to store final bone transforms
             _boneTransforms = new Matrix[_tankModel.Bones.Count];
@@ -61,11 +70,9 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             KeyboardState kb = Keyboard.GetState();
             Matrix steerRotation = Matrix.Identity;
 
-            //limitar camara para nao inverter
-            if (_stearAngle > MathHelper.ToRadians(45f))
-                _stearAngle = MathHelper.ToRadians(45f);
-            if (_stearAngle < MathHelper.ToRadians(-45f))
-                _stearAngle = MathHelper.ToRadians(-45f);
+
+            if (kb.IsKeyDown(Keys.LeftShift)) speed = 15f;
+            else speed = 5f;
 
             if (kb.IsKeyDown(Keys.A)) //esquerda
                 _yaw = _yaw + MathHelper.ToRadians(speed);
@@ -77,13 +84,18 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             Vector3 direction = Vector3.Transform(-Vector3.UnitZ, rotacao);
 
 
-            if (kb.IsKeyDown(Keys.W)) //esquerda
+            //movimento tank
+            if (kb.IsKeyDown(Keys.W)){ //esquerda
                 this._pos = this._pos + direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (kb.IsKeyDown(Keys.S)) //direita
+                _yaw_wheel = _yaw_wheel + MathHelper.ToRadians(speed);
+            }
+            if (kb.IsKeyDown(Keys.S)){ //direita
                 this._pos = this._pos - direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _yaw_wheel = _yaw_wheel - MathHelper.ToRadians(speed);
+            }
 
-            Vector3 normal;
-            if (this._pos.X >= 0 && this._pos.X < terreno.w - 1 && this._pos.Z >= 0 && this._pos.Z < terreno.h - 1){
+            //lemitar tank no terreno
+            if (this._pos.X >= 0 && this._pos.X < terreno.w - 1 && this._pos.Z >= 0 && this._pos.Z < terreno.h - 1){ 
                 this._pos.Y = terreno.GetY(this._pos.X, this._pos.Z);
                 normal = terreno.GetNormal(this._pos.X, this._pos.Z);
             }else
@@ -92,9 +104,20 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
                 normal = Vector3.Up;
             }
 
-            Vector3 right = Vector3.Cross(direction, normal);
-            Vector3 direcaoCorrigida = Vector3.Cross(normal, right);
+            //movimento da torre
+            if (kb.IsKeyDown(Keys.Left)) //up
+                _yaw_torre = _yaw_torre + MathHelper.ToRadians(speed);
+            if (kb.IsKeyDown(Keys.Right)) //down
+                _yaw_torre = _yaw_torre - MathHelper.ToRadians(speed);
+            //movimento do canhao
+            if (kb.IsKeyDown(Keys.Up)) //esquerda
+                _yaw_canhao = _yaw_canhao + MathHelper.ToRadians(speed);
+            if (kb.IsKeyDown(Keys.Down)) //direita
+                _yaw_canhao = _yaw_canhao - MathHelper.ToRadians(speed);
 
+
+            Vector3 right = Vector3.Cross(direction, normal);
+            direcaoCorrigida = Vector3.Cross(normal, right);
 
             normal.Normalize();
             direcaoCorrigida.Normalize();
@@ -104,31 +127,49 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             rotacao.Forward = direcaoCorrigida;
             rotacao.Right = right;
 
-
             Matrix translacao = Matrix.CreateTranslation(this._pos);
 
+            //lemitar rotacao canhao
+            if (_yaw_canhao > MathHelper.ToRadians(40.0f))
+                _yaw_canhao = MathHelper.ToRadians(40.0f);
+            if (_yaw_canhao < -MathHelper.ToRadians(40.0f))
+                _yaw_canhao = -MathHelper.ToRadians(40.0f);
+
+
+            //aplicar transformaçoes
             _tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotacao * translacao;
-            _torreBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f)) * _turretTransform;
-            _canhaoBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(-45f)) * _cannonTransform;
+            _torreBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f*_yaw_torre)) * _turretTransform;
+            _canhaoBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(-45f*_yaw_canhao)) * _cannonTransform;
+            _leftBackWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _leftBackWheelBoneTransform;
+            _rightBackWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _rightBackWheelBoneTransform;
+            _leftFrontWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _leftFrontWheelBoneTransform;
+            _rightFrontWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _rightFrontWheelBoneTransform;
             _leftSteerBone.Transform = steerRotation * _leftSteerDefaultTransform;
             _rightSteerBone.Transform = steerRotation * _rightSteerDefaultTransform;
+
             // Appies transforms to bones in a cascade
             _tankModel.CopyAbsoluteBoneTransformsTo(_boneTransforms);
-
         }
 
-        public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
-        {
+            public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
+            {
             foreach (ModelMesh mesh in _tankModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.EnableDefaultLighting();
                     effect.LightingEnabled = true; // turn on the lighting subsystem.
-                    effect.DirectionalLight0.DiffuseColor = new Vector3(0.5f, 0, 0); // a red light
-                    effect.DirectionalLight0.Direction = new Vector3(1, 0, 0);  // coming along the x-axis
-                    effect.DirectionalLight0.SpecularColor = new Vector3(0, 1, 0);
-
+                    effect.EmissiveColor = new Vector3(0.0f, 0.0f, 0.0f);
+                    effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
+                    effect.DirectionalLight0.Enabled = true;
+                    effect.DirectionalLight0.DiffuseColor = new Vector3(0.5f, 0.5f, 0.5f);
+                    effect.DirectionalLight0.SpecularColor = new Vector3(1.0f, 1.0f, 1.0f);
+                    effect.DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f);
+                    effect.SpecularColor = new Vector3(0.0f, 0.0f, 0.0f);
+                    effect.SpecularPower = 127;
+                    Vector3 lightDirection = new Vector3(1.0f, -1f, 1f);
+                    lightDirection.Normalize();
+                    effect.DirectionalLight0.Direction = lightDirection;
+                    effect.EnableDefaultLighting();
                     effect.World = _boneTransforms[mesh.ParentBone.Index];
                     effect.View = view;
                     effect.Projection = projection;

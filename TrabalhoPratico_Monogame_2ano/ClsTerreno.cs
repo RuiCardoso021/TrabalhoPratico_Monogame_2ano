@@ -71,7 +71,6 @@ namespace TrabalhoPratico_Monogame_2ano
             }
 
             
-
             _indexCount = (w - 1) * h * 2;
             short[] indices = new short[_indexCount];
             calculateNormal();
@@ -91,6 +90,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _indexBuffer.SetData<short>(indices);
         }
 
+        //calculo das normais
         public void calculateNormal()
         {
             for (int z = 1; z < h - 1; z++){
@@ -149,7 +149,7 @@ namespace TrabalhoPratico_Monogame_2ano
                 }
             }
         }
-
+         
         //funcao para ir buscar o Y aproximado
         public float GetY(float x, float z) {
             int xA = (int)x;
