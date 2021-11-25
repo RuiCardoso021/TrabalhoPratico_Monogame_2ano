@@ -14,8 +14,8 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
         {
             HandleMouseMovement();
 
-            Matrix rotacao = Matrix.CreateFromYawPitchRoll(_yaw, _pitch, 0f);
-            Vector3 direction = Vector3.Transform(-Vector3.UnitZ, rotacao);
+            Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, _pitch, 0f);
+            Vector3 direction = Vector3.Transform(-Vector3.UnitZ, rotation);
             Vector3 right = Vector3.Cross(direction, Vector3.UnitY);
             Vector3 up = Vector3.Cross(right, direction);
 

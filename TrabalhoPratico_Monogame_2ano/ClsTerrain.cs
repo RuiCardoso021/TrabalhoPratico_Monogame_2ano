@@ -14,9 +14,9 @@ namespace TrabalhoPratico_Monogame_2ano
         private Texture2D _textureImg;
         private VertexPositionNormalTexture[] vertices;
 
-        public float[,] alturas;
+        public float[,] heights;
         public int w, h;
-        public Vector3[,] normais;
+        public Vector3[,] normals;
 
         public ClsTerrain(GraphicsDevice device, Texture2D heightMap, Texture2D texture)
         {
@@ -51,8 +51,8 @@ namespace TrabalhoPratico_Monogame_2ano
             _textureImg.GetData<Color>(texels);
             _vertexCount = w * h;
             _vScale = 0.03f;
-            alturas = new float[w, h];
-            normais = new Vector3[w, h];
+            heights = new float[w, h];
+            normals = new Vector3[w, h];
             vertices = new VertexPositionNormalTexture[_vertexCount];
 
             for (int z = 0; z < h; z++)
@@ -61,8 +61,8 @@ namespace TrabalhoPratico_Monogame_2ano
                 {
                     int pos = z * w + x;
                     float y = texels[pos].R * _vScale;
-                    alturas[x, z] = y;
-                    normais[x, z] = Vector3.UnitY;
+                    heights[x, z] = y;
+                    normals[x, z] = Vector3.UnitY;
                     vertices[pos] = new VertexPositionNormalTexture(new Vector3(x, y, z), Vector3.UnitY, new Vector2(x % 2, z % 2));
                 }
             }
@@ -136,7 +136,7 @@ namespace TrabalhoPratico_Monogame_2ano
                     Vector3 n0 = new Vector3();
                     n0 = (n12 + n23 + n34 + n45 + n56 + n67 + n78 + n81) / 8;
                     n0.Normalize();
-                    normais[x, z] = n0;
+                    normals[x, z] = n0;
 
                     vertices[i].Normal = n0;
                 }
@@ -155,10 +155,10 @@ namespace TrabalhoPratico_Monogame_2ano
             int xD = xA + 1;
             int zD = zA + 1;
 
-            float yA = alturas[xA, zA];
-            float yB = alturas[xB, zB];
-            float yC = alturas[xC, zC];
-            float yD = alturas[xD, zD];
+            float yA = heights[xA, zA];
+            float yB = heights[xB, zB];
+            float yC = heights[xC, zC];
+            float yD = heights[xD, zD];
 
             float dA = x - xA;
             float dB = xB - x;
@@ -184,10 +184,10 @@ namespace TrabalhoPratico_Monogame_2ano
             int xD = xA + 1;
             int zD = zA + 1;
 
-            Vector3 normalA = normais[xA, zA];
-            Vector3 normalB = normais[xB, zB];
-            Vector3 normalC = normais[xC, zC];
-            Vector3 normalD = normais[xD, zD];
+            Vector3 normalA = normals[xA, zA];
+            Vector3 normalB = normals[xB, zB];
+            Vector3 normalC = normals[xC, zC];
+            Vector3 normalD = normals[xD, zD];
 
             float dA = x - xA;
             float dB = xB - x;

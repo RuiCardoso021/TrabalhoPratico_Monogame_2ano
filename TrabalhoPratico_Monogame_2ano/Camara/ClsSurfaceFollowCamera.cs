@@ -10,7 +10,7 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
         {
         }
 
-        public override void Update(ClsTerrain terreno)
+        public override void Update(ClsTerrain terrain)
         {
             HandleMouseMovement();
 
@@ -32,8 +32,8 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
             if (kb.IsKeyDown(Keys.NumPad2)) //trazs
                 _pos = _pos - direction * speed;
 
-            if (_pos.X >= 0 && _pos.X < terreno.w - 1 && _pos.Z >= 0 && _pos.Z < terreno.h - 1)
-                _pos.Y = terreno.GetY(_pos.X, _pos.Z) + _verticalOffset;
+            if (_pos.X >= 0 && _pos.X < terrain.w - 1 && _pos.Z >= 0 && _pos.Z < terrain.h - 1)
+                _pos.Y = terrain.GetY(_pos.X, _pos.Z) + _verticalOffset;
 
             Vector3 target = _pos + direction;
             view = Matrix.CreateLookAt(_pos, target, up);

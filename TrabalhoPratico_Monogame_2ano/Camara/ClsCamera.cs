@@ -28,7 +28,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _camaraValue = 0;
         }
 
-        public abstract void Update(ClsTerrain terreno);
+        public abstract void Update(ClsTerrain terrain);
 
         protected void HandleMouseMovement()
         {
