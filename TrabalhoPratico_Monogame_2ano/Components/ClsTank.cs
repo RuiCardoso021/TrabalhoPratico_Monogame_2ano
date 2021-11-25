@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TrabalhoPratico_Monogame_2ano.KeyBoard;
 
 namespace TrabalhoPratico_Monogame_2ano.Componentes
 {
@@ -8,6 +9,8 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
     {
         private const float _speed = 3f;
         private Model _tankModel;
+        private ClsKeyboardManager _kb;
+        private Keys[] _movTank;
 
         private ModelBone _towerBone,
             _cannonBone,
@@ -27,19 +30,22 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _leftBackWheelBoneTransform,
             _rightBackWheelBoneTransform,
             _leftFrontWheelBoneTransform,
-            _rightFrontWheelBoneTransform;
+            _rightFrontWheelBoneTransform,
+            _hatchBoneTransform;
 
         private Matrix[] _boneTransforms;
-        private float _vel, _yaw, _yaw_cannon, _yaw_tower, _yaw_wheel;
+        private float _vel, _yaw, _yaw_cannon, _yaw_tower, _yaw_wheel, _yaw_hatch, _yaw_steer;
 
-        public Vector3 correctedDirection;
+        public Vector3 direction;
         public Vector3 normal;
         public Vector3 _pos;
 
-        public ClsTank(GraphicsDevice device, Model modelo, Vector3 position)
+        public ClsTank(GraphicsDevice device, Model modelo, Vector3 position, Keys[] movTank)
         {
             _pos = position;
             _tankModel = modelo;
+            _kb = new ClsKeyboardManager();
+            _movTank = movTank;
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -60,6 +66,7 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _rightSteerDefaultTransform = _rightSteerBone.Transform;
             _turretTransform = _towerBone.Transform;
             _cannonTransform = _cannonBone.Transform;
+            _hatchBoneTransform = _hatchBone.Transform;
 
             // create array to store final bone transforms
             _boneTransforms = new Matrix[_tankModel.Bones.Count];
@@ -70,53 +77,39 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
         public void Update(GameTime gameTime, ClsTerrain terrain)
         {
             KeyboardState kb = Keyboard.GetState();
-            Matrix steerRotation = Matrix.Identity;
             Vector3 lastPosition = _pos;
 
+            //aumentar velucidade com shift
             if (kb.IsKeyDown(Keys.LeftShift)) _vel = 15f;
             else _vel = 5f;
 
-            if (kb.IsKeyDown(Keys.A)) //esquerda
-                _yaw = _yaw + MathHelper.ToRadians(_speed);
-            if (kb.IsKeyDown(Keys.D)) //direita
-                _yaw = _yaw - MathHelper.ToRadians(_speed);
+            _yaw_wheel = _kb.Left_and_Right(_yaw_wheel, _vel, _movTank[1], _movTank[3]);                      //movimenta as rodas
+            _yaw_hatch = _kb.Left_and_Right(_yaw_hatch, _speed, Keys.O, Keys.P);                    //abre e fecha escutilha
+            _yaw_tower = _kb.Left_and_Right(_yaw_tower, _speed, Keys.Left, Keys.Right);             //movimento da torre 
+            _yaw_cannon = _kb.Left_and_Right(_yaw_cannon, _speed, Keys.Up, Keys.Down);              //movimento do canhao
+            //_yaw_steer = _kb.Left_and_Right(_yaw_steer, _speed, Keys.A, Keys.D);                    //movimento da direcao
 
+            _yaw_cannon = _kb.LimitAngle(_yaw_cannon, 45f, 0f);                                     //lemitar rotacao canhao
+            _yaw_hatch = _kb.LimitAngle(_yaw_hatch, 90f, 0f);                                       //lemitar rotacao escutilha
+            _yaw_steer = 0f;
+            //_yaw_steer = _kb.LimitAngle(_yaw_steer, 90f, 90f);                                       //lemitar rotacao direcao
+
+
+            //movimentos do tanque
+            _yaw = _kb.Left_and_Right(_yaw, _speed, _movTank[0], _movTank[2]);                                //movimento tank, esq, dir
             Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
-            Vector3 direction = Vector3.Transform(-Vector3.UnitZ, rotation);
-
-            //movimento tank
-            if (kb.IsKeyDown(Keys.W))
-            { //esquerda
-                _pos = _pos + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                _yaw_wheel = _yaw_wheel + MathHelper.ToRadians(_vel);
-            }
-            if (kb.IsKeyDown(Keys.S))
-            { //direita
-                _pos = _pos - direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                _yaw_wheel = _yaw_wheel - MathHelper.ToRadians(_vel);
-            }
+            direction = Vector3.Transform(-Vector3.UnitZ, rotation);
+            _pos = _kb.MovimentWithPosition(_pos, direction, _vel, _movTank[1], _movTank[3], gameTime);       //movimento tank frente e traz
 
             //lemitar tank no terreno
-            if (_pos.X >= 0 && _pos.X < terrain.w - 1 && _pos.Z >= 0 && _pos.Z < terrain.h - 1)
-            {
+            if (_pos.X >= 0 && _pos.X < terrain.w - 1 && _pos.Z >= 0 && _pos.Z < terrain.h - 1){
                 _pos.Y = terrain.GetY(_pos.X, _pos.Z);
                 normal = terrain.GetNormal(_pos.X, _pos.Z);
-            }
-            else _pos = lastPosition;
+            } else _pos = lastPosition;
 
-            //movimento da torre
-            if (kb.IsKeyDown(Keys.Left)) //up
-                _yaw_tower = _yaw_tower + MathHelper.ToRadians(_speed);
-            if (kb.IsKeyDown(Keys.Right)) //down
-                _yaw_tower = _yaw_tower - MathHelper.ToRadians(_speed);
-            //movimento do canhao
-            if (kb.IsKeyDown(Keys.Up)) //esquerda
-                _yaw_cannon = _yaw_cannon + MathHelper.ToRadians(_speed);
-            if (kb.IsKeyDown(Keys.Down)) //direita
-                _yaw_cannon = _yaw_cannon - MathHelper.ToRadians(_speed);
-
+            
             Vector3 right = Vector3.Cross(direction, normal);
-            correctedDirection = Vector3.Cross(normal, right);
+            Vector3 correctedDirection = Vector3.Cross(normal, right);
 
             normal.Normalize();
             correctedDirection.Normalize();
@@ -128,11 +121,6 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
 
             Matrix translation = Matrix.CreateTranslation(_pos);
 
-            //lemitar rotacao canhao
-            if (_yaw_cannon > MathHelper.ToRadians(40.0f))
-                _yaw_cannon = MathHelper.ToRadians(40.0f);
-            if (_yaw_cannon < -MathHelper.ToRadians(40.0f))
-                _yaw_cannon = -MathHelper.ToRadians(40.0f);
 
             //aplicar transformaçoes
             _tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotation * translation;
@@ -142,8 +130,9 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _rightBackWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _rightBackWheelBoneTransform;
             _leftFrontWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _leftFrontWheelBoneTransform;
             _rightFrontWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _rightFrontWheelBoneTransform;
-            _leftSteerBone.Transform = steerRotation * _leftSteerDefaultTransform;
-            _rightSteerBone.Transform = steerRotation * _rightSteerDefaultTransform;
+            _hatchBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(-45f * _yaw_hatch)) * _hatchBoneTransform;
+            _leftSteerBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f * _yaw_steer)) * _leftSteerDefaultTransform;
+            _rightSteerBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f * _yaw_steer)) * _rightSteerDefaultTransform;
 
             // Appies transforms to bones in a cascade
             _tankModel.CopyAbsoluteBoneTransformsTo(_boneTransforms);
@@ -173,6 +162,7 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
                     effect.Projection = projection;
                     effect.EnableDefaultLighting();
                 }
+
                 // Draw each mesh of the model
                 mesh.Draw();
             }

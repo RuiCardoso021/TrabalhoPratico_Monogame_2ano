@@ -13,20 +13,15 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
             _tank = tank;
         }
 
-        public override void Update(ClsTerrain terrain)
+        public override void Update(ClsTerrain terrain, GameTime gametime)
         {
             HandleMouseMovement();
             _pos = _tank._pos;
-            _pos.X -= 10f;
-            Vector3 right = Vector3.Cross(_tank.correctedDirection, Vector3.UnitY);
-            Vector3 up = Vector3.Cross(right, _tank.correctedDirection);
-
-            if (_pos.X >= 0 && _pos.X < terrain.w - 1 && _pos.Z >= 0 && _pos.Z < terrain.h - 1)
-            {
-                _pos.Y = terrain.GetY(_pos.X, _pos.Z) + 6f;
-            }
-
-            Vector3 target = _pos + _tank.correctedDirection;
+            _pos.Y = 5f;
+            Vector3 right = Vector3.Cross(_tank.direction, Vector3.UnitY);
+            Vector3 up = Vector3.Cross(right, _tank.direction);
+            _pos = _pos - _tank.direction * 13f + _tank.normal * 5f;
+            Vector3 target = _pos + _tank.direction;
             view = Matrix.CreateLookAt(_pos, target, up);
         }
     }

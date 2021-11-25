@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TrabalhoPratico_Monogame_2ano.Camara;
+using TrabalhoPratico_Monogame_2ano.KeyBoard;
 
 namespace TrabalhoPratico_Monogame_2ano
 {
@@ -12,11 +14,13 @@ namespace TrabalhoPratico_Monogame_2ano
         protected float _yaw;
         protected float _verticalOffset;
         protected int _camaraValue;
+        protected ClsKeyboardManager _kb;
 
         public Matrix view, projection;
 
         public ClsCamera(GraphicsDevice device)
         {
+            _kb = new ClsKeyboardManager();
             _screenH = device.Viewport.Height;
             _screenW = device.Viewport.Width;
             float aspectRatio = (float)device.Viewport.Width / device.Viewport.Height;
@@ -28,7 +32,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _camaraValue = 0;
         }
 
-        public abstract void Update(ClsTerrain terrain);
+        public abstract void Update(ClsTerrain terrain, GameTime gametime);
 
         protected void HandleMouseMovement()
         {
@@ -39,10 +43,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _pitch = _pitch + mouseOffset.Y * radianosPorPixel;
 
             //limitar camara para nao inverter
-            if (_pitch > MathHelper.ToRadians(85f))
-                _pitch = MathHelper.ToRadians(85f);
-            if (_pitch < MathHelper.ToRadians(-85f))
-                _pitch = MathHelper.ToRadians(-85f);
+            _pitch = _kb.LimitAngle(_pitch, 85f, 85f);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace TrabalhoPratico_Monogame_2ano
         private ClsTerrain _terreno;
         private ClsCamera _camera;
         private ClsTank _tank, _tankEnemy;
-        private int _viewMode = 0;
+        private int _viewMode = 2;
 
         public Game1()
         {
@@ -28,11 +28,12 @@ namespace TrabalhoPratico_Monogame_2ano
 
         protected override void LoadContent()
         {
+            
             Mouse.SetPosition(_graphics.GraphicsDevice.Viewport.Width / 2, _graphics.GraphicsDevice.Viewport.Height / 2);
             _terreno = new ClsTerrain(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("texture"));
-            _camera = new ClsGhostCamera(_graphics.GraphicsDevice);
-            _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f));
-            _tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f));
+            _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f), new Keys[] { Keys.A, Keys.W, Keys.D, Keys.S });
+            _tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f), new Keys[] { Keys.J, Keys.I, Keys.L, Keys.K });
+            _camera = new ClsThirdPersonCamera(_graphics.GraphicsDevice, _tank);
         }
 
         protected override void Update(GameTime gameTime)
@@ -40,7 +41,7 @@ namespace TrabalhoPratico_Monogame_2ano
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            HandleCamera();
+            HandleCamera(gameTime);
             _tank.Update(gameTime, _terreno);
             _tankEnemy.Update(gameTime, _terreno);
 
@@ -57,7 +58,7 @@ namespace TrabalhoPratico_Monogame_2ano
             base.Draw(gameTime);
         }
 
-        private void HandleCamera()
+        private void HandleCamera(GameTime gameTime)
         {
             KeyboardState kb = Keyboard.GetState();
 
@@ -77,8 +78,13 @@ namespace TrabalhoPratico_Monogame_2ano
                 _camera = new ClsThirdPersonCamera(_graphics.GraphicsDevice, _tank);
                 _viewMode = 2;
             }
+            else if (kb.IsKeyDown(Keys.F4) && _viewMode != 3)
+            {
+                _camera = new ClsCannonCamera(_graphics.GraphicsDevice, _tank);
+                _viewMode = 3;
+            }
 
-            _camera.Update(_terreno);
+            _camera.Update(_terreno, gameTime);
         }
     }
 }
