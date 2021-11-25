@@ -13,7 +13,7 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
             _tank = tank;
         }
 
-        public override void Update(ClsTerreno terreno)
+        public override void Update(ClsTerrain terreno)
         {
             HandleMouseMovement();
             _pos = _tank._pos;

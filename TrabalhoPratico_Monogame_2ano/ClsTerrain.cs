@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TrabalhoPratico_Monogame_2ano
 {
-    internal class ClsTerreno
+    internal class ClsTerrain
     {
         private VertexBuffer _vertexBuffer;
         private IndexBuffer _indexBuffer;
@@ -18,7 +18,7 @@ namespace TrabalhoPratico_Monogame_2ano
         public int w, h;
         public Vector3[,] normais;
 
-        public ClsTerreno(GraphicsDevice device, Texture2D heightMap, Texture2D texture)
+        public ClsTerrain(GraphicsDevice device, Texture2D heightMap, Texture2D texture)
         {
             _textureImg = heightMap;
             _effect = new BasicEffect(device);

@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TrabalhoPratico_Monogame_2ano
 {
-    abstract class ClsCamara
+    internal abstract class ClsCamara
     {
-        protected Vector3 _pos; // sprite posicao on screen       
+        protected Vector3 _pos; // sprite posicao on screen
         protected int _screenW, _screenH;
         protected float _pitch;
         protected float _yaw;
@@ -28,7 +28,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _camaraValue = 0;
         }
 
-        public abstract void Update(ClsTerreno terreno);
+        public abstract void Update(ClsTerrain terreno);
 
         protected void HandleMouseMovement()
         {

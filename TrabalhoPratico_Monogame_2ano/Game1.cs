@@ -9,7 +9,7 @@ namespace TrabalhoPratico_Monogame_2ano
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
-        private ClsTerreno _terreno;
+        private ClsTerrain _terreno;
         private ClsCamara _camara;
         private ClsTank _tank, _tankEnemy;
         private int _viewMode = 0;
@@ -29,7 +29,7 @@ namespace TrabalhoPratico_Monogame_2ano
         protected override void LoadContent()
         {
             Mouse.SetPosition(_graphics.GraphicsDevice.Viewport.Width / 2, _graphics.GraphicsDevice.Viewport.Height / 2);
-            _terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("texture"));
+            _terreno = new ClsTerrain(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("texture"));
             _camara = new ClsGhostCamera(_graphics.GraphicsDevice);
             _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f));
             _tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f));

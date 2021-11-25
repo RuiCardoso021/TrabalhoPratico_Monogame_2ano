@@ -10,7 +10,7 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
         {
         }
 
-        public override void Update(ClsTerreno terreno)
+        public override void Update(ClsTerrain terreno)
         {
             HandleMouseMovement();
 

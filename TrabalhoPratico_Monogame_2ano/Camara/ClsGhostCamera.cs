@@ -10,7 +10,7 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
         {
         }
 
-        public override void Update(ClsTerreno terreno)
+        public override void Update(ClsTerrain terreno)
         {
             HandleMouseMovement();
 
@@ -36,7 +36,6 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
             if (kb.IsKeyDown(Keys.NumPad1)) //baixo
                 _pos = _pos - up * speed;
 
-          
             Vector3 target = _pos + direction;
             view = Matrix.CreateLookAt(_pos, target, up);
 

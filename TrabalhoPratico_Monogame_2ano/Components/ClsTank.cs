@@ -67,7 +67,7 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _scale = Matrix.CreateScale(0.01f);
         }
 
-        public void Update(GameTime gameTime, ClsTerreno terreno)
+        public void Update(GameTime gameTime, ClsTerrain terreno)
         {
             KeyboardState kb = Keyboard.GetState();
             Matrix steerRotation = Matrix.Identity;

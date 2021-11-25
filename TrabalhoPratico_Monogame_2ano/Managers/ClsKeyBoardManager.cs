@@ -3,12 +3,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TrabalhoPratico_Monogame_2ano.KeyBoard
 {
-    internal class ClsKeyBoardManager
+    internal class ClsKeyboardManager
     {
         private KeyboardState _kb;
         public float _yaw, _speed;
 
-        public ClsKeyBoardManager(GraphicsDevice device)
+        public ClsKeyboardManager(GraphicsDevice device)
         {
             _yaw = 0;
             _speed = 5f;
