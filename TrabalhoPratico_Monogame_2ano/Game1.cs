@@ -31,8 +31,8 @@ namespace TrabalhoPratico_Monogame_2ano
             
             Mouse.SetPosition(_graphics.GraphicsDevice.Viewport.Width / 2, _graphics.GraphicsDevice.Viewport.Height / 2);
             _terreno = new ClsTerrain(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("texture"));
-            _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f), new Keys[] { Keys.A, Keys.W, Keys.D, Keys.S });
-            _tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f), new Keys[] { Keys.J, Keys.I, Keys.L, Keys.K });
+            _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f), new Keys[] { Keys.A, Keys.W, Keys.D, Keys.S, Keys.Q, Keys.E, Keys.F, Keys.H, Keys.T, Keys.G});
+            _tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f), new Keys[] { Keys.J, Keys.I, Keys.L, Keys.K, Keys.O, Keys.P, Keys.Left, Keys.Right, Keys.Up, Keys.Down });
             _camera = new ClsThirdPersonCamera(_graphics.GraphicsDevice, _tank);
         }
 

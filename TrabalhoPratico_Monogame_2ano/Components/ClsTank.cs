@@ -84,10 +84,10 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             else _vel = 5f;
 
             _yaw_wheel = _kb.Left_and_Right(_yaw_wheel, _vel, _movTank[1], _movTank[3]);                      //movimenta as rodas
-            _yaw_hatch = _kb.Left_and_Right(_yaw_hatch, _speed, Keys.O, Keys.P);                    //abre e fecha escutilha
-            _yaw_tower = _kb.Left_and_Right(_yaw_tower, _speed, Keys.Left, Keys.Right);             //movimento da torre 
-            _yaw_cannon = _kb.Left_and_Right(_yaw_cannon, _speed, Keys.Up, Keys.Down);              //movimento do canhao
-            //_yaw_steer = _kb.Left_and_Right(_yaw_steer, _speed, Keys.A, Keys.D);                    //movimento da direcao
+            _yaw_hatch = _kb.Left_and_Right(_yaw_hatch, _speed, _movTank[4], _movTank[5]);                    //abre e fecha escutilha
+            _yaw_tower = _kb.Left_and_Right(_yaw_tower, _speed, _movTank[6], _movTank[7]);                    //movimento da torre 
+            _yaw_cannon = _kb.Left_and_Right(_yaw_cannon, _speed, _movTank[8], _movTank[9]);                  //movimento do canhao
+            //_yaw_steer = _kb.Left_and_Right(_yaw_steer, _speed, Keys.A, Keys.D);                            //movimento da direcao
 
             _yaw_cannon = _kb.LimitAngle(_yaw_cannon, 45f, 0f);                                     //lemitar rotacao canhao
             _yaw_hatch = _kb.LimitAngle(_yaw_hatch, 90f, 0f);                                       //lemitar rotacao escutilha
