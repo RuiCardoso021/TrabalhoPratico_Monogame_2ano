@@ -4,7 +4,7 @@ using TrabalhoPratico_Monogame_2ano.Componentes;
 
 namespace TrabalhoPratico_Monogame_2ano.Camara
 {
-    internal class ClsCannonCamera : ClsCamara
+    internal class ClsCannonCamera : ClsCamera
     {
         private ClsTank _tank;
 

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TrabalhoPratico_Monogame_2ano
 {
-    internal abstract class ClsCamara
+    internal abstract class ClsCamera
     {
         protected Vector3 _pos; // sprite posicao on screen
         protected int _screenW, _screenH;
@@ -15,7 +15,7 @@ namespace TrabalhoPratico_Monogame_2ano
 
         public Matrix view, projection;
 
-        public ClsCamara(GraphicsDevice device)
+        public ClsCamera(GraphicsDevice device)
         {
             _screenH = device.Viewport.Height;
             _screenW = device.Viewport.Width;

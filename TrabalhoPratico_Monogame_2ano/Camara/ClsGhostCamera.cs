@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TrabalhoPratico_Monogame_2ano.Camara
 {
-    internal class ClsGhostCamera : ClsCamara
+    internal class ClsGhostCamera : ClsCamera
     {
         public ClsGhostCamera(GraphicsDevice device) : base(device)
         {

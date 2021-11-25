@@ -10,7 +10,7 @@ namespace TrabalhoPratico_Monogame_2ano
     {
         private GraphicsDeviceManager _graphics;
         private ClsTerrain _terreno;
-        private ClsCamara _camara;
+        private ClsCamera _camera;
         private ClsTank _tank, _tankEnemy;
         private int _viewMode = 0;
 
@@ -30,7 +30,7 @@ namespace TrabalhoPratico_Monogame_2ano
         {
             Mouse.SetPosition(_graphics.GraphicsDevice.Viewport.Width / 2, _graphics.GraphicsDevice.Viewport.Height / 2);
             _terreno = new ClsTerrain(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("texture"));
-            _camara = new ClsGhostCamera(_graphics.GraphicsDevice);
+            _camera = new ClsGhostCamera(_graphics.GraphicsDevice);
             _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f));
             _tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f));
         }
@@ -51,9 +51,9 @@ namespace TrabalhoPratico_Monogame_2ano
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _terreno.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection);
-            _tank.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection, Vector3.Zero);
-            _tankEnemy.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection, Vector3.UnitX);
+            _terreno.Draw(_graphics.GraphicsDevice, _camera.view, _camera.projection);
+            _tank.Draw(_graphics.GraphicsDevice, _camera.view, _camera.projection, Vector3.Zero);
+            _tankEnemy.Draw(_graphics.GraphicsDevice, _camera.view, _camera.projection, Vector3.UnitX);
             base.Draw(gameTime);
         }
 
@@ -64,21 +64,21 @@ namespace TrabalhoPratico_Monogame_2ano
             //alteraçao da prespetiva da camara
             if (kb.IsKeyDown(Keys.F1) && _viewMode != 0)
             {
-                _camara = new ClsGhostCamera(_graphics.GraphicsDevice);
+                _camera = new ClsGhostCamera(_graphics.GraphicsDevice);
                 _viewMode = 0;
             }
             else if (kb.IsKeyDown(Keys.F2) && _viewMode != 1)
             {
-                _camara = new ClsSurfaceFollowCamera(_graphics.GraphicsDevice);
+                _camera = new ClsSurfaceFollowCamera(_graphics.GraphicsDevice);
                 _viewMode = 1;
             }
             else if (kb.IsKeyDown(Keys.F3) && _viewMode != 2)
             {
-                _camara = new ClsThirdPersonCamera(_graphics.GraphicsDevice, _tank);
+                _camera = new ClsThirdPersonCamera(_graphics.GraphicsDevice, _tank);
                 _viewMode = 2;
             }
 
-            _camara.Update(_terreno);
+            _camera.Update(_terreno);
         }
     }
 }

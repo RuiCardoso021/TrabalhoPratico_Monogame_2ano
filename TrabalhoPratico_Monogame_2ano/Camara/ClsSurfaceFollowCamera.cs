@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TrabalhoPratico_Monogame_2ano.Camara
 {
-    internal class ClsSurfaceFollowCamera : ClsCamara
+    internal class ClsSurfaceFollowCamera : ClsCamera
     {
         public ClsSurfaceFollowCamera(GraphicsDevice device) : base(device)
         {
