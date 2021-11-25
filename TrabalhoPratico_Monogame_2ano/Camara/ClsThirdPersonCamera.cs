@@ -1,15 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TrabalhoPratico_Monogame_2ano.Componentes;
-using TrabalhoPratico_Monogame_2ano.KeyBoard;
 
 namespace TrabalhoPratico_Monogame_2ano.Camara
 {
-    internal class ClsSurfaceCanhao : ClsCamara
+    internal class ClsThirdPersonCamera : ClsCamara
     {
         private ClsTank _tank;
 
-        public ClsSurfaceCanhao(GraphicsDevice device, ClsTank tank) : base(device)
+        public ClsThirdPersonCamera(GraphicsDevice device, ClsTank tank) : base(device)
         {
             _tank = tank;
         }
@@ -18,6 +17,7 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
         {
             HandleMouseMovement();
             _pos = _tank._pos;
+            _pos.X -= 10f;
             Vector3 right = Vector3.Cross(_tank.direcaoCorrigida, Vector3.UnitY);
             Vector3 up = Vector3.Cross(right, _tank.direcaoCorrigida);
 
@@ -28,7 +28,6 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
 
             Vector3 target = _pos + _tank.direcaoCorrigida;
             view = Matrix.CreateLookAt(_pos, target, up);
-
         }
     }
 }

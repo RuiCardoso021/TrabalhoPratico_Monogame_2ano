@@ -53,10 +53,10 @@ namespace TrabalhoPratico_Monogame_2ano
 
             _terreno.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection);
             _tank.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection, Vector3.Zero);
-            _tankEnemy.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection, Vector3.UnitY);
+            _tankEnemy.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection, Vector3.UnitX);
             base.Draw(gameTime);
         }
-        
+
         private void HandleCamera()
         {
             KeyboardState kb = Keyboard.GetState();
@@ -74,7 +74,7 @@ namespace TrabalhoPratico_Monogame_2ano
             }
             else if (kb.IsKeyDown(Keys.F3) && _viewMode != 2)
             {
-                _camara = new ClsSurfaceTank(_graphics.GraphicsDevice, _tank);
+                _camara = new ClsThirdPersonCamera(_graphics.GraphicsDevice, _tank);
                 _viewMode = 2;
             }
 

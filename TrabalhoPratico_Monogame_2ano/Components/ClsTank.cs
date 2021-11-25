@@ -4,11 +4,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TrabalhoPratico_Monogame_2ano.Componentes
 {
-    class ClsTank
+    internal class ClsTank
     {
         private const float speed = 3f;
 
         private Model _tankModel;
+
         private ModelBone _torreBone,
             _canhaoBone,
             _leftBackWheelBone,
@@ -18,6 +19,7 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _leftSteerBone,
             _rightSteerBone,
             _hatchBone;
+
         private Matrix _turretTransform,
             _cannonTransform,
             _scale,
@@ -27,12 +29,12 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _rightBackWheelBoneTransform,
             _leftFrontWheelBoneTransform,
             _rightFrontWheelBoneTransform;
+
         private Matrix[] _boneTransforms;
         public Vector3 _pos;
         private float _vel, _yaw, _yaw_canhao, _yaw_torre, _yaw_wheel;
         public Vector3 direcaoCorrigida;
         public Vector3 normal;
-
 
         public ClsTank(GraphicsDevice device, Model modelo, Vector3 position)
         {
@@ -50,15 +52,14 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _hatchBone = _tankModel.Bones["hatch_geo"];
 
             // Read bone default transforms
-            _leftBackWheelBoneTransform     = _leftBackWheelBone.Transform;
-            _rightBackWheelBoneTransform    = _rightBackWheelBone.Transform;
-            _leftFrontWheelBoneTransform    = _leftFrontWheelBone.Transform;
-            _rightFrontWheelBoneTransform   = _rightFrontWheelBone.Transform;
-            _leftSteerDefaultTransform      = _leftSteerBone.Transform;
-            _rightSteerDefaultTransform     = _rightSteerBone.Transform;
-            _turretTransform                = _torreBone.Transform;
-            _cannonTransform                = _canhaoBone.Transform;
-            
+            _leftBackWheelBoneTransform = _leftBackWheelBone.Transform;
+            _rightBackWheelBoneTransform = _rightBackWheelBone.Transform;
+            _leftFrontWheelBoneTransform = _leftFrontWheelBone.Transform;
+            _rightFrontWheelBoneTransform = _rightFrontWheelBone.Transform;
+            _leftSteerDefaultTransform = _leftSteerBone.Transform;
+            _rightSteerDefaultTransform = _rightSteerBone.Transform;
+            _turretTransform = _torreBone.Transform;
+            _cannonTransform = _canhaoBone.Transform;
 
             // create array to store final bone transforms
             _boneTransforms = new Matrix[_tankModel.Bones.Count];
@@ -80,26 +81,28 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             if (kb.IsKeyDown(Keys.D)) //direita
                 _yaw = _yaw - MathHelper.ToRadians(speed);
 
-
             Matrix rotacao = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
             Vector3 direction = Vector3.Transform(-Vector3.UnitZ, rotacao);
 
-
             //movimento tank
-            if (kb.IsKeyDown(Keys.W)){ //esquerda
+            if (kb.IsKeyDown(Keys.W))
+            { //esquerda
                 this._pos = this._pos + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 _yaw_wheel = _yaw_wheel + MathHelper.ToRadians(_vel);
             }
-            if (kb.IsKeyDown(Keys.S)){ //direita
+            if (kb.IsKeyDown(Keys.S))
+            { //direita
                 this._pos = this._pos - direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 _yaw_wheel = _yaw_wheel - MathHelper.ToRadians(_vel);
             }
 
             //lemitar tank no terreno
-            if (this._pos.X >= 0 && this._pos.X < terreno.w - 1 && this._pos.Z >= 0 && this._pos.Z < terreno.h - 1){ 
+            if (this._pos.X >= 0 && this._pos.X < terreno.w - 1 && this._pos.Z >= 0 && this._pos.Z < terreno.h - 1)
+            {
                 this._pos.Y = terreno.GetY(this._pos.X, this._pos.Z);
                 normal = terreno.GetNormal(this._pos.X, this._pos.Z);
-            }else _pos = lastPosition;
+            }
+            else _pos = lastPosition;
 
             //movimento da torre
             if (kb.IsKeyDown(Keys.Left)) //up
@@ -111,7 +114,6 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
                 _yaw_canhao = _yaw_canhao + MathHelper.ToRadians(speed);
             if (kb.IsKeyDown(Keys.Down)) //direita
                 _yaw_canhao = _yaw_canhao - MathHelper.ToRadians(speed);
-
 
             Vector3 right = Vector3.Cross(direction, normal);
             direcaoCorrigida = Vector3.Cross(normal, right);
@@ -132,11 +134,10 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             if (_yaw_canhao < -MathHelper.ToRadians(40.0f))
                 _yaw_canhao = -MathHelper.ToRadians(40.0f);
 
-
             //aplicar transformaçoes
             _tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotacao * translacao;
-            _torreBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f*_yaw_torre)) * _turretTransform;
-            _canhaoBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(-45f*_yaw_canhao)) * _cannonTransform;
+            _torreBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f * _yaw_torre)) * _turretTransform;
+            _canhaoBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(-45f * _yaw_canhao)) * _cannonTransform;
             _leftBackWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _leftBackWheelBoneTransform;
             _rightBackWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _rightBackWheelBoneTransform;
             _leftFrontWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _leftFrontWheelBoneTransform;
@@ -149,7 +150,7 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection, Vector3 emissiveColor)
-            {
+        {
             foreach (ModelMesh mesh in _tankModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
