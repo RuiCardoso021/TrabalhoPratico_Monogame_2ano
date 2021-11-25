@@ -6,7 +6,8 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
 {
     class ClsTank
     {
-        private float speed = 5f;
+        private const float speed = 3f;
+
         private Model _tankModel;
         private ModelBone _torreBone,
             _canhaoBone,
@@ -28,7 +29,7 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _rightFrontWheelBoneTransform;
         private Matrix[] _boneTransforms;
         public Vector3 _pos;
-        private float _yaw, _yaw_canhao, _yaw_torre, _yaw_wheel;
+        private float _vel, _yaw, _yaw_canhao, _yaw_torre, _yaw_wheel;
         public Vector3 direcaoCorrigida;
         public Vector3 normal;
 
@@ -69,10 +70,10 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
         {
             KeyboardState kb = Keyboard.GetState();
             Matrix steerRotation = Matrix.Identity;
+            Vector3 lastPosition = _pos;
 
-
-            if (kb.IsKeyDown(Keys.LeftShift)) speed = 15f;
-            else speed = 5f;
+            if (kb.IsKeyDown(Keys.LeftShift)) _vel = 15f;
+            else _vel = 5f;
 
             if (kb.IsKeyDown(Keys.A)) //esquerda
                 _yaw = _yaw + MathHelper.ToRadians(speed);
@@ -86,23 +87,19 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
 
             //movimento tank
             if (kb.IsKeyDown(Keys.W)){ //esquerda
-                this._pos = this._pos + direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                _yaw_wheel = _yaw_wheel + MathHelper.ToRadians(speed);
+                this._pos = this._pos + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _yaw_wheel = _yaw_wheel + MathHelper.ToRadians(_vel);
             }
             if (kb.IsKeyDown(Keys.S)){ //direita
-                this._pos = this._pos - direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                _yaw_wheel = _yaw_wheel - MathHelper.ToRadians(speed);
+                this._pos = this._pos - direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _yaw_wheel = _yaw_wheel - MathHelper.ToRadians(_vel);
             }
 
             //lemitar tank no terreno
             if (this._pos.X >= 0 && this._pos.X < terreno.w - 1 && this._pos.Z >= 0 && this._pos.Z < terreno.h - 1){ 
                 this._pos.Y = terreno.GetY(this._pos.X, this._pos.Z);
                 normal = terreno.GetNormal(this._pos.X, this._pos.Z);
-            }else
-            {
-                this._pos.Y = 0.0f;
-                normal = Vector3.Up;
-            }
+            }else _pos = lastPosition;
 
             //movimento da torre
             if (kb.IsKeyDown(Keys.Left)) //up
@@ -151,14 +148,14 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _tankModel.CopyAbsoluteBoneTransformsTo(_boneTransforms);
         }
 
-            public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
+        public void Draw(GraphicsDevice device, Matrix view, Matrix projection, Vector3 emissiveColor)
             {
             foreach (ModelMesh mesh in _tankModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.LightingEnabled = true; // turn on the lighting subsystem.
-                    effect.EmissiveColor = new Vector3(0.0f, 0.0f, 0.0f);
+                    effect.EmissiveColor = emissiveColor;
                     effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
                     effect.DirectionalLight0.Enabled = true;
                     effect.DirectionalLight0.DiffuseColor = new Vector3(0.5f, 0.5f, 0.5f);

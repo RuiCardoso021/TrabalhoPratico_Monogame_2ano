@@ -31,8 +31,8 @@ namespace TrabalhoPratico_Monogame_2ano
             Mouse.SetPosition(_graphics.GraphicsDevice.Viewport.Width / 2, _graphics.GraphicsDevice.Viewport.Height / 2);
             _terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("texture"));
             _camara = new ClsGhostCamera(_graphics.GraphicsDevice);
-            _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(30f, 0f, 0f));
-            //_tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(30f, 0f, 30f));
+            _tank = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f));
+            _tankEnemy = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f));
         }
 
         protected override void Update(GameTime gameTime)
@@ -42,7 +42,7 @@ namespace TrabalhoPratico_Monogame_2ano
 
             HandleCamera();
             _tank.Update(gameTime, _terreno);
-            //_tankEnemy.Update(gameTime, _terreno);
+            _tankEnemy.Update(gameTime, _terreno);
 
             base.Update(gameTime);
         }
@@ -52,8 +52,8 @@ namespace TrabalhoPratico_Monogame_2ano
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _terreno.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection);
-            _tank.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection);
-            //_tankEnemy.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection);
+            _tank.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection, Vector3.Zero);
+            _tankEnemy.Draw(_graphics.GraphicsDevice, _camara.view, _camara.projection, Vector3.UnitY);
             base.Draw(gameTime);
         }
         
