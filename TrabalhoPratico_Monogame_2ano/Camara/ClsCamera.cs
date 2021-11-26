@@ -15,15 +15,14 @@ namespace TrabalhoPratico_Monogame_2ano
         protected float _yaw;
         protected float _verticalOffset;
         protected int _cameraValue;
-        protected ClsKeyboardManager _kb;
+        protected ClsKeyboardManager _kbManager;
 
-        private static ClsCamera _currentCameraMode;
-
+        public static ClsCamera Instance;
         public Matrix view, projection;
 
         public ClsCamera(GraphicsDevice device)
         {
-            _kb = new ClsKeyboardManager();
+            _kbManager = new ClsKeyboardManager();
             _screenH = device.Viewport.Height;
             _screenW = device.Viewport.Width;
             float aspectRatio = (float)device.Viewport.Width / device.Viewport.Height;
@@ -33,6 +32,8 @@ namespace TrabalhoPratico_Monogame_2ano
             _yaw = 0;
             _verticalOffset = 5f;
             _cameraValue = 0;
+
+            Instance = this;
         }
 
         public abstract void Update(ClsTerrain terrain, GameTime gametime);
@@ -46,31 +47,28 @@ namespace TrabalhoPratico_Monogame_2ano
             _pitch = _pitch + mouseOffset.Y * radianosPorPixel;
 
             //limitar camara para nao inverter
-            _pitch = _kb.LimitAngle(_pitch, 85f, 85f);
+            _pitch = _kbManager.LimitAngle(_pitch, 85f, 85f);
         }
 
-        internal static ClsCamera CreateCamera(GraphicsDevice graphicsDevice, ClsTank tank)
+        internal static void CreateCamera(GraphicsDevice graphicsDevice, ClsTank tank)
         {
-            _currentCameraMode = new ClsThirdPersonCamera(graphicsDevice, tank);
-            return _currentCameraMode;
+            Instance = new ClsThirdPersonCamera(graphicsDevice, tank);
         }
 
-        internal static ClsCamera HandleCameraMode(GameTime gameTime, GraphicsDevice graphicsDevice, ClsTerrain terrain, ClsTank tank)
+        internal static void UpdateCamera(GameTime gameTime, GraphicsDevice graphicsDevice, ClsTank tank, ClsTerrain terrain)
         {
             KeyboardState kb = Keyboard.GetState();
 
-            if (kb.IsKeyDown(Keys.F3) && !(_currentCameraMode is ClsThirdPersonCamera) || _currentCameraMode == null)
-                _currentCameraMode = new ClsThirdPersonCamera(graphicsDevice, tank);
-            else if (kb.IsKeyDown(Keys.F1) && !(_currentCameraMode is ClsGhostCamera))
-                _currentCameraMode = new ClsGhostCamera(graphicsDevice);
-            else if (kb.IsKeyDown(Keys.F2) && !(_currentCameraMode is ClsSurfaceFollowCamera))
-                _currentCameraMode = new ClsSurfaceFollowCamera(graphicsDevice);
-            else if (kb.IsKeyDown(Keys.F4) && !(_currentCameraMode is ClsCannonCamera))
-                _currentCameraMode = new ClsCannonCamera(graphicsDevice, tank);
+            if (kb.IsKeyDown(Keys.F3) && !(Instance is ClsThirdPersonCamera) || Instance == null)
+                Instance = new ClsThirdPersonCamera(graphicsDevice, tank);
+            else if (kb.IsKeyDown(Keys.F1) && !(Instance is ClsGhostCamera))
+                Instance = new ClsGhostCamera(graphicsDevice);
+            else if (kb.IsKeyDown(Keys.F2) && !(Instance is ClsSurfaceFollowCamera))
+                Instance = new ClsSurfaceFollowCamera(graphicsDevice);
+            else if (kb.IsKeyDown(Keys.F4) && !(Instance is ClsCannonCamera))
+                Instance = new ClsCannonCamera(graphicsDevice, tank);
 
-            _currentCameraMode.Update(terrain, gameTime);
-
-            return _currentCameraMode;
+            Instance.Update(terrain, gameTime);
         }
     }
 }

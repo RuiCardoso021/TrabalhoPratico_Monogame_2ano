@@ -10,7 +10,7 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
         {
         }
 
-        public override void Update(ClsTerrain terrain, GameTime gametime)
+        public override void Update(ClsTerrain terreno, GameTime gametime)
         {
             HandleMouseMovement();
 
@@ -21,9 +21,9 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
             float speed = 20f;
 
             //direcao da camara
-            _pos = _kb.MovimentWithPosition(_pos, right, speed, Keys.NumPad6, Keys.NumPad4, gametime);      //esquerda e direita
-            _pos = _kb.MovimentWithPosition(_pos, direction, speed, Keys.NumPad8, Keys.NumPad5, gametime);  //frente e traz
-            _pos = _kb.MovimentWithPosition(_pos, up, speed, Keys.NumPad7, Keys.NumPad1, gametime);      //cima e baixo
+            _pos = _kbManager.MovimentWithPosition(_pos, right, speed, Keys.NumPad6, Keys.NumPad4, gametime);      //esquerda e direita
+            _pos = _kbManager.MovimentWithPosition(_pos, direction, speed, Keys.NumPad8, Keys.NumPad5, gametime);  //frente e traz
+            _pos = _kbManager.MovimentWithPosition(_pos, up, speed, Keys.NumPad7, Keys.NumPad1, gametime);      //cima e baixo
 
             Vector3 target = _pos + direction;
             view = Matrix.CreateLookAt(_pos, target, up);

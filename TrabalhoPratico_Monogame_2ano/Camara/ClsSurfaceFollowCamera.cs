@@ -22,8 +22,8 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
             float speed = 20f;
 
             //direcao da camara
-            _pos = _kb.MovimentWithPosition(_pos, right, speed, Keys.NumPad6, Keys.NumPad4, gametime);      //esquerda e direita
-            _pos = _kb.MovimentWithPosition(_pos, direction, speed, Keys.NumPad8, Keys.NumPad5, gametime);  //frente e traz
+            _pos = _kbManager.MovimentWithPosition(_pos, right, speed, Keys.NumPad6, Keys.NumPad4, gametime);      //esquerda e direita
+            _pos = _kbManager.MovimentWithPosition(_pos, direction, speed, Keys.NumPad8, Keys.NumPad5, gametime);  //frente e traz
 
             if (_pos.X >= 0 && _pos.X < terrain.w - 1 && _pos.Z >= 0 && _pos.Z < terrain.h - 1)
                 _pos.Y = terrain.GetY(_pos.X, _pos.Z) + _verticalOffset;
