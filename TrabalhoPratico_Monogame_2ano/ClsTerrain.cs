@@ -28,8 +28,8 @@ namespace TrabalhoPratico_Monogame_2ano
             _effect.EmissiveColor = new Vector3(0.0f, 0.0f, 0.0f);
             _effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
             _effect.DirectionalLight0.Enabled = true;
-            _effect.DirectionalLight0.DiffuseColor = new Vector3(0.5f, 0.5f, 0.5f);
-            _effect.DirectionalLight0.SpecularColor = new Vector3(1.0f, 1.0f, 1.0f);
+            _effect.DirectionalLight0.DiffuseColor = new Vector3(0.0f, 0.0f, 0.0f);
+            _effect.DirectionalLight0.SpecularColor = new Vector3(0.7f, 0.7f, 0.7f);
             _effect.DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f);
             _effect.SpecularColor = new Vector3(0.0f, 0.0f, 0.0f);
             _effect.SpecularPower = 127;
