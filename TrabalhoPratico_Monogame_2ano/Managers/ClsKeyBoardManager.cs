@@ -5,7 +5,7 @@ namespace TrabalhoPratico_Monogame_2ano.KeyBoard
 {
     public class ClsKeyboardManager
     {
-        public KeyboardState _kb;
+        private KeyboardState _kb;
 
         public ClsKeyboardManager()
         {
