@@ -36,7 +36,7 @@ namespace TrabalhoPratico_Monogame_2ano
             Instance = this;
         }
 
-        public abstract void Update(ClsTerrain terrain, GameTime gametime);
+        public abstract void Update(GameTime gametime, ClsTerrain terrain, ClsTank tank);
 
         protected void HandleMouseMovement()
         {
@@ -50,9 +50,9 @@ namespace TrabalhoPratico_Monogame_2ano
             _pitch = _kbManager.LimitAngle(_pitch, 85f, 85f);
         }
 
-        internal static void CreateCamera(GraphicsDevice graphicsDevice, ClsTank tank)
+        internal static void CreateCamera(GraphicsDevice graphicsDevice)
         {
-            Instance = new ClsThirdPersonCamera(graphicsDevice, tank);
+            Instance = new ClsThirdPersonCamera(graphicsDevice);
         }
 
         internal static void UpdateCamera(GameTime gameTime, GraphicsDevice graphicsDevice, ClsTank tank, ClsTerrain terrain)
@@ -60,15 +60,15 @@ namespace TrabalhoPratico_Monogame_2ano
             KeyboardState kb = Keyboard.GetState();
 
             if (kb.IsKeyDown(Keys.F3) && !(Instance is ClsThirdPersonCamera) || Instance == null)
-                Instance = new ClsThirdPersonCamera(graphicsDevice, tank);
+                Instance = new ClsThirdPersonCamera(graphicsDevice);
             else if (kb.IsKeyDown(Keys.F1) && !(Instance is ClsGhostCamera))
                 Instance = new ClsGhostCamera(graphicsDevice);
             else if (kb.IsKeyDown(Keys.F2) && !(Instance is ClsSurfaceFollowCamera))
                 Instance = new ClsSurfaceFollowCamera(graphicsDevice);
             else if (kb.IsKeyDown(Keys.F4) && !(Instance is ClsCannonCamera))
-                Instance = new ClsCannonCamera(graphicsDevice, tank);
+                Instance = new ClsCannonCamera(graphicsDevice);
 
-            Instance.Update(terrain, gameTime);
+            Instance.Update(gameTime, terrain, tank);
         }
     }
 }

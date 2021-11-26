@@ -6,22 +6,19 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
 {
     internal class ClsThirdPersonCamera : ClsCamera
     {
-        private ClsTank _tank;
-
-        public ClsThirdPersonCamera(GraphicsDevice device, ClsTank tank) : base(device)
+        public ClsThirdPersonCamera(GraphicsDevice device) : base(device)
         {
-            _tank = tank;
         }
 
-        public override void Update(ClsTerrain terrain, GameTime gametime)
+        public override void Update(GameTime gametime, ClsTerrain terrain, ClsTank tank)
         {
             HandleMouseMovement();
-            _pos = _tank._pos;
+            _pos = tank._pos;
             _pos.Y = 5f;
-            Vector3 right = Vector3.Cross(_tank.direction, Vector3.UnitY);
-            Vector3 up = Vector3.Cross(right, _tank.direction);
-            _pos = _pos - _tank.direction * 13f + _tank.normal * 5f;
-            Vector3 target = _pos + _tank.direction;
+            Vector3 right = Vector3.Cross(tank.direction, Vector3.UnitY);
+            Vector3 up = Vector3.Cross(right, tank.direction);
+            _pos = _pos - tank.direction * 13f + tank.normal * 5f;
+            Vector3 target = _pos + tank.direction;
             view = Matrix.CreateLookAt(_pos, target, up);
         }
     }

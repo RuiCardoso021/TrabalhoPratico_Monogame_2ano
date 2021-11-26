@@ -6,14 +6,11 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
 {
     internal class ClsCannonCamera : ClsCamera
     {
-        private ClsTank _tank;
-
-        public ClsCannonCamera(GraphicsDevice device, ClsTank tank) : base(device)
+        public ClsCannonCamera(GraphicsDevice device) : base(device)
         {
-            _tank = tank;
         }
 
-        public override void Update(ClsTerrain terrain, GameTime gametime)
+        public override void Update(GameTime gametime, ClsTerrain terrain, ClsTank tank)
         {
         }
     }

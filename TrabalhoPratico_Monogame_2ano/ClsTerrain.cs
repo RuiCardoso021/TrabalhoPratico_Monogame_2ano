@@ -69,7 +69,7 @@ namespace TrabalhoPratico_Monogame_2ano
 
             _indexCount = (w - 1) * h * 2;
             short[] indices = new short[_indexCount];
-            calculateNormal();
+            CalculateNormal();
 
             for (int strip = 0; strip < w - 1; strip++)
             {
@@ -87,7 +87,7 @@ namespace TrabalhoPratico_Monogame_2ano
         }
 
         //calculo das normais
-        public void calculateNormal()
+        public void CalculateNormal()
         {
             for (int z = 1; z < h - 1; z++)
             {
