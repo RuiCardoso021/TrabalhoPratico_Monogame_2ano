@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TrabalhoPratico_Monogame_2ano.Camara;
 using TrabalhoPratico_Monogame_2ano.Components;
 
 namespace TrabalhoPratico_Monogame_2ano
@@ -40,7 +39,7 @@ namespace TrabalhoPratico_Monogame_2ano
                 Exit();
 
             _camera = ClsCamera.HandleCameraMode(gameTime, _graphics.GraphicsDevice, _terrain, _tank);
-           
+
             _tank.Update(gameTime, _terrain);
             _tankEnemy.Update(gameTime, _terrain);
 

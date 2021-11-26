@@ -101,7 +101,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _pos = _kb.MovimentWithPosition(_pos, direction, _vel, _movTank[1], _movTank[3], gameTime);       //movimento tank frente e traz
 
             //lemitar tank no terreno
-            if (_pos.X >= 2 && _pos.X < terrain.w - 2 && _pos.Z >= 2 && _pos.Z < terrain.h - 2){
+            if (_pos.X >= 2 && _pos.X < terrain.w - 2 && _pos.Z >= 2 && _pos.Z < terrain.h - 2)
+            {
                 _pos.Y = terrain.GetY(_pos.X, _pos.Z);
                 normal = terrain.GetNormal(_pos.X, _pos.Z);
             }
