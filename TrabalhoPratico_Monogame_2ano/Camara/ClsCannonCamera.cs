@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TrabalhoPratico_Monogame_2ano.Componentes;
+using TrabalhoPratico_Monogame_2ano.Components;
 
 namespace TrabalhoPratico_Monogame_2ano.Camara
 {
@@ -15,7 +15,6 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
 
         public override void Update(ClsTerrain terrain, GameTime gametime)
         {
-            
         }
     }
 }

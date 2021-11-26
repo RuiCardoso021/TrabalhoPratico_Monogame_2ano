@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TrabalhoPratico_Monogame_2ano.Camara;
+using TrabalhoPratico_Monogame_2ano.Components;
 using TrabalhoPratico_Monogame_2ano.KeyBoard;
 
 namespace TrabalhoPratico_Monogame_2ano
@@ -13,8 +14,10 @@ namespace TrabalhoPratico_Monogame_2ano
         protected float _pitch;
         protected float _yaw;
         protected float _verticalOffset;
-        protected int _camaraValue;
+        protected int _cameraValue;
         protected ClsKeyboardManager _kb;
+
+        private static ClsCamera _currentCameraMode;
 
         public Matrix view, projection;
 
@@ -29,7 +32,7 @@ namespace TrabalhoPratico_Monogame_2ano
             _pitch = 0;
             _yaw = 0;
             _verticalOffset = 5f;
-            _camaraValue = 0;
+            _cameraValue = 0;
         }
 
         public abstract void Update(ClsTerrain terrain, GameTime gametime);
@@ -44,6 +47,30 @@ namespace TrabalhoPratico_Monogame_2ano
 
             //limitar camara para nao inverter
             _pitch = _kb.LimitAngle(_pitch, 85f, 85f);
+        }
+
+        internal static ClsCamera CreateCamera(GraphicsDevice graphicsDevice, ClsTank tank)
+        {
+            _currentCameraMode = new ClsThirdPersonCamera(graphicsDevice, tank);
+            return _currentCameraMode;
+        }
+
+        internal static ClsCamera HandleCameraMode(GameTime gameTime, GraphicsDevice graphicsDevice, ClsTerrain terrain, ClsTank tank)
+        {
+            KeyboardState kb = Keyboard.GetState();
+
+            if (kb.IsKeyDown(Keys.F3) && !(_currentCameraMode is ClsThirdPersonCamera) || _currentCameraMode == null)
+                _currentCameraMode = new ClsThirdPersonCamera(graphicsDevice, tank);
+            else if (kb.IsKeyDown(Keys.F1) && !(_currentCameraMode is ClsGhostCamera))
+                _currentCameraMode = new ClsGhostCamera(graphicsDevice);
+            else if (kb.IsKeyDown(Keys.F2) && !(_currentCameraMode is ClsSurfaceFollowCamera))
+                _currentCameraMode = new ClsSurfaceFollowCamera(graphicsDevice);
+            else if (kb.IsKeyDown(Keys.F4) && !(_currentCameraMode is ClsCannonCamera))
+                _currentCameraMode = new ClsCannonCamera(graphicsDevice, tank);
+
+            _currentCameraMode.Update(terrain, gameTime);
+
+            return _currentCameraMode;
         }
     }
 }

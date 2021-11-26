@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TrabalhoPratico_Monogame_2ano.KeyBoard;
 
-namespace TrabalhoPratico_Monogame_2ano.Componentes
+namespace TrabalhoPratico_Monogame_2ano.Components
 {
     internal class ClsTank
     {
@@ -85,7 +85,7 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
 
             _yaw_wheel = _kb.Left_and_Right(_yaw_wheel, _vel, _movTank[1], _movTank[3]);                      //movimenta as rodas
             _yaw_hatch = _kb.Left_and_Right(_yaw_hatch, _speed, _movTank[4], _movTank[5]);                    //abre e fecha escutilha
-            _yaw_tower = _kb.Left_and_Right(_yaw_tower, _speed, _movTank[6], _movTank[7]);                    //movimento da torre 
+            _yaw_tower = _kb.Left_and_Right(_yaw_tower, _speed, _movTank[6], _movTank[7]);                    //movimento da torre
             _yaw_cannon = _kb.Left_and_Right(_yaw_cannon, _speed, _movTank[8], _movTank[9]);                  //movimento do canhao
             //_yaw_steer = _kb.Left_and_Right(_yaw_steer, _speed, Keys.A, Keys.D);                            //movimento da direcao
 
@@ -94,7 +94,6 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _yaw_steer = 0f;
             //_yaw_steer = _kb.LimitAngle(_yaw_steer, 90f, 90f);                                       //lemitar rotacao direcao
 
-
             //movimentos do tanque
             _yaw = _kb.Left_and_Right(_yaw, _speed, _movTank[0], _movTank[2]);                                //movimento tank, esq, dir
             Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
@@ -102,12 +101,13 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             _pos = _kb.MovimentWithPosition(_pos, direction, _vel, _movTank[1], _movTank[3], gameTime);       //movimento tank frente e traz
 
             //lemitar tank no terreno
-            if (_pos.X >= 0 && _pos.X < terrain.w - 1 && _pos.Z >= 0 && _pos.Z < terrain.h - 1){
+            if (_pos.X >= 0 && _pos.X < terrain.w - 1 && _pos.Z >= 0 && _pos.Z < terrain.h - 1)
+            {
                 _pos.Y = terrain.GetY(_pos.X, _pos.Z);
                 normal = terrain.GetNormal(_pos.X, _pos.Z);
-            } else _pos = lastPosition;
+            }
+            else _pos = lastPosition;
 
-            
             Vector3 right = Vector3.Cross(direction, normal);
             Vector3 correctedDirection = Vector3.Cross(normal, right);
 
@@ -120,7 +120,6 @@ namespace TrabalhoPratico_Monogame_2ano.Componentes
             rotation.Right = right;
 
             Matrix translation = Matrix.CreateTranslation(_pos);
-
 
             //aplicar transformaçoes
             _tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotation * translation;

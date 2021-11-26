@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace TrabalhoPratico_Monogame_2ano.KeyBoard
@@ -8,7 +7,8 @@ namespace TrabalhoPratico_Monogame_2ano.KeyBoard
     {
         public KeyboardState _kb;
 
-        public ClsKeyboardManager(){
+        public ClsKeyboardManager()
+        {
             _kb = Keyboard.GetState();
         }
 
@@ -43,6 +43,5 @@ namespace TrabalhoPratico_Monogame_2ano.KeyBoard
 
             return yaw;
         }
-
     }
 }
