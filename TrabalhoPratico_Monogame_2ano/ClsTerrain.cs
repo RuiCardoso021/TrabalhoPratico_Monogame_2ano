@@ -43,6 +43,15 @@ namespace TrabalhoPratico_Monogame_2ano
             CreateGeometry(device);
         }
 
+        //limite terreno
+        public bool TerrainLimit(float x, float z)
+        {
+            if (x >= -0 && x < w - 2 && z >= 0 && z < h)
+                return true;
+
+            return false;
+        }
+
         private void CreateGeometry(GraphicsDevice device)
         {
             w = _textureImg.Width;
