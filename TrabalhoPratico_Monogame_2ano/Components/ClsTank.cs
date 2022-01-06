@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
 using TrabalhoPratico_Monogame_2ano.KeyBoard;
 
 namespace TrabalhoPratico_Monogame_2ano.Components
@@ -11,6 +13,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private Model _tankModel;
         private ClsKeyboardManager _kb;
         private Keys[] _movTank;
+        private List<ClsBullet> _bulletList;
+        private ClsBullet _bullet;
 
         private ModelBone _towerBone,
             _cannonBone,
@@ -37,6 +41,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private float _vel, _yaw, _yaw_cannon, _yaw_tower, _yaw_wheel, _yaw_hatch, _yaw_steer;
 
         public Vector3 direction;
+        
         public Vector3 normal;
         public Vector3 _pos;
 
@@ -46,6 +51,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _tankModel = modelo;
             _kb = new ClsKeyboardManager();
             _movTank = movTank;
+            _bulletList = new List<ClsBullet>();
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -74,7 +80,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _scale = Matrix.CreateScale(0.01f);
         }
 
-        public void Update(GameTime gameTime, ClsTerrain terrain)
+        public void Update(GameTime gameTime, ClsTerrain terrain, Game1 game)
         {
             KeyboardState kb = Keyboard.GetState();
             Vector3 lastPosition = _pos;
@@ -108,6 +114,36 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             }
             else _pos = lastPosition;
 
+            
+            if (kb.IsKeyDown(Keys.Space))
+            {
+                Vector3 dirCanhao = _boneTransforms[10].Backward;
+                dirCanhao.Normalize();
+                Vector3 posCanhao = _boneTransforms[10].Translation;
+
+                for (int i = 0; i < 1; i++)
+                {
+                    _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), posCanhao, dirCanhao);
+
+                    _bulletList.Add(_bullet);
+                }
+            }
+
+            //update bullet
+            foreach (ClsBullet bala in _bulletList)
+                bala.Update(gameTime);
+            
+
+            //remove bullet
+            foreach (ClsBullet bala in _bulletList.ToArray())
+                if (_bullet.posicao.Y <= terrain.GetY(_bullet.posicao.X, _bullet.posicao.Z) || _bullet.posicao.Y < 0)
+                    _bulletList.Remove(_bullet);
+                
+
+            
+
+            
+
             Vector3 right = Vector3.Cross(direction, normal);
             Vector3 correctedDirection = Vector3.Cross(normal, right);
 
@@ -135,10 +171,23 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
             // Appies transforms to bones in a cascade
             _tankModel.CopyAbsoluteBoneTransformsTo(_boneTransforms);
+
+        }
+
+
+        public void ChaseEnemy()
+        {
+
+            float angle = 30f;
+            Vector3 pos = new Vector3(30 * MathF.Cos(angle), 0, 30 * MathF.Sin(angle));
+
+          
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection, Vector3 emissiveColor)
         {
+
+
             foreach (ModelMesh mesh in _tankModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
@@ -164,6 +213,15 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
                 // Draw each mesh of the model
                 mesh.Draw();
+            }
+
+            if (_bulletList.Count > 0)
+            {
+                foreach (ClsBullet bala in _bulletList)
+                {
+                    // Draw the model
+                    bala.Draw(device);
+                }
             }
         }
     }

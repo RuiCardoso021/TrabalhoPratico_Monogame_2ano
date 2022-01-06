@@ -43,8 +43,8 @@ namespace TrabalhoPratico_Monogame_2ano
 
             ClsCamera.UpdateCamera(gameTime, _graphics.GraphicsDevice, _tank, _terrain);
 
-            _tank.Update(gameTime, _terrain);
-            _tankEnemy.Update(gameTime, _terrain);
+            _tank.Update(gameTime, _terrain, this);
+            _tankEnemy.Update(gameTime, _terrain, this);
             _effectRain.Update(gameTime, _terrain);
 
             base.Update(gameTime);

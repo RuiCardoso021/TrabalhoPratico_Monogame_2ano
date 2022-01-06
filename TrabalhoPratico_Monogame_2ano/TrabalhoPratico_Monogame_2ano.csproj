@@ -27,6 +27,9 @@
     <None Update="Content\engine_diff_tex_0.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Sphere.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\tank.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
