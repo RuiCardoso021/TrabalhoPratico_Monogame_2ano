@@ -44,6 +44,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         
         public Vector3 normal;
         public Vector3 _pos;
+        private bool _allowShoot = true;
 
         public ClsTank(GraphicsDevice device, Model modelo, Vector3 position, Keys[] movTank)
         {
@@ -114,9 +115,15 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             }
             else _pos = lastPosition;
 
-            
-            if (kb.IsKeyDown(Keys.Space))
+
+            if (kb.IsKeyUp(Keys.Space) && !_allowShoot)
             {
+                _allowShoot = true;     
+            }
+            
+            if (kb.IsKeyDown(Keys.Space) && _allowShoot)
+            {
+                _allowShoot = false;
                 Vector3 dirCanhao = _boneTransforms[10].Backward;
                 dirCanhao.Normalize();
                 Vector3 posCanhao = _boneTransforms[10].Translation;
@@ -135,7 +142,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             
 
             //remove bullet
-            foreach (ClsBullet bala in _bulletList.ToArray())
+            foreach (ClsBullet bullet in _bulletList.ToArray())
                 if (_bullet.posicao.Y <= terrain.GetY(_bullet.posicao.X, _bullet.posicao.Z) || _bullet.posicao.Y < 0)
                     _bulletList.Remove(_bullet);
                 
