@@ -48,6 +48,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private bool _allowShoot = true;
 
         ClsColliderBullet _colliderBullet;
+        ClsColliderTanks _colliderTank;
 
         public ClsTank(GraphicsDevice device, Model modelo, Vector3 position, Keys[] movTank)
         {
@@ -57,6 +58,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _movTank = movTank;
             _bulletList = new List<ClsBullet>();
             _colliderBullet = new ClsColliderBullet(4f);
+            _colliderTank = new ClsColliderTanks(4f);
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -118,6 +120,13 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 normal = terrain.GetNormal(_pos.X, _pos.Z);
             }
             else _pos = lastPosition;
+
+            if (!_colliderTank.CollidedTank(_pos, game._tankEnemy._pos))
+                _pos = lastPosition;
+         
+           
+
+
 
             //shoot bullet to cannon
             ShootBullet(game, gameTime, kb, terrain);
