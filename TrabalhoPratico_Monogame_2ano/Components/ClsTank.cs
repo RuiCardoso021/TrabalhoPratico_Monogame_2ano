@@ -115,41 +115,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             }
             else _pos = lastPosition;
 
-
-            if (kb.IsKeyUp(Keys.Space) && !_allowShoot)
-            {
-                _allowShoot = true;     
-            }
-            
-            if (kb.IsKeyDown(Keys.Space) && _allowShoot)
-            {
-                _allowShoot = false;
-                Vector3 dirCanhao = _boneTransforms[10].Backward;
-                dirCanhao.Normalize();
-                Vector3 posCanhao = _boneTransforms[10].Translation;
-
-                for (int i = 0; i < 1; i++)
-                {
-                    _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), posCanhao, dirCanhao);
-
-                    _bulletList.Add(_bullet);
-                }
-            }
-
-            //update bullet
-            foreach (ClsBullet bala in _bulletList)
-                bala.Update(gameTime);
-            
-
-            //remove bullet
-            foreach (ClsBullet bullet in _bulletList.ToArray())
-                if (_bullet.posicao.Y <= terrain.GetY(_bullet.posicao.X, _bullet.posicao.Z) || _bullet.posicao.Y < 0)
-                    _bulletList.Remove(_bullet);
-                
-
-            
-
-            
+            //shoot bullet to cannon
+            ShootBullet(game, gameTime, kb, terrain);
 
             Vector3 right = Vector3.Cross(direction, normal);
             Vector3 correctedDirection = Vector3.Cross(normal, right);
@@ -178,6 +145,39 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
             // Appies transforms to bones in a cascade
             _tankModel.CopyAbsoluteBoneTransformsTo(_boneTransforms);
+
+        }
+
+        public void ShootBullet(Game1 game, GameTime gameTime, KeyboardState kb, ClsTerrain terrain )
+        {
+            if (kb.IsKeyUp(Keys.Space) && !_allowShoot)
+            {
+                _allowShoot = true;
+            }
+
+            if (kb.IsKeyDown(Keys.Space) && _allowShoot)
+            {
+                _allowShoot = false;
+                Vector3 dirCanhao = _boneTransforms[10].Backward;
+                dirCanhao.Normalize();
+                Vector3 posCanhao = _boneTransforms[10].Translation;
+
+                for (int i = 0; i < 1; i++)
+                {
+                    _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), posCanhao, dirCanhao);
+                    _bulletList.Add(_bullet);
+                }
+            }
+
+            //update bullet
+            foreach (ClsBullet bala in _bulletList)
+                bala.Update(gameTime);
+
+
+            //remove bullet
+            foreach (ClsBullet bullet in _bulletList.ToArray())
+                if (bullet.posicao.Y <= terrain.GetY(bullet.posicao.X, bullet.posicao.Z) || bullet.posicao.Y < 0)
+                    _bulletList.Remove(bullet);
 
         }
 
