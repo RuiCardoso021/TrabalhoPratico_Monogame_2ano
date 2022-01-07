@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TrabalhoPratico_Monogame_2ano
 {
-    internal class ClsTerrain
+    public class ClsTerrain
     {
         private VertexBuffer _vertexBuffer;
         private IndexBuffer _indexBuffer;

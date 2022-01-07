@@ -10,7 +10,7 @@ namespace TrabalhoPratico_Monogame_2ano
     {
         private GraphicsDeviceManager _graphics;
         private ClsTerrain _terrain;
-        private ClsTank _tank, _tankEnemy;
+        public ClsTank _tank, _tankEnemy;
         private ClsRain _effectRain;
 
         public Game1()

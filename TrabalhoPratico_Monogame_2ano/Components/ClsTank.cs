@@ -3,11 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using TrabalhoPratico_Monogame_2ano.Collider;
 using TrabalhoPratico_Monogame_2ano.KeyBoard;
 
 namespace TrabalhoPratico_Monogame_2ano.Components
 {
-    internal class ClsTank
+    public class ClsTank
     {
         private const float _speed = 3f;
         private Model _tankModel;
@@ -45,6 +46,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         public Vector3 normal;
         public Vector3 _pos;
 
+        ClsColliderBullet _colliderBullet;
+
         public ClsTank(GraphicsDevice device, Model modelo, Vector3 position, Keys[] movTank)
         {
             _pos = position;
@@ -52,6 +55,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _kb = new ClsKeyboardManager();
             _movTank = movTank;
             _bulletList = new List<ClsBullet>();
+            _colliderBullet = new ClsColliderBullet(4f);
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -163,14 +167,29 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             }
 
             //update bullet
-            foreach (ClsBullet bala in _bulletList)
-                bala.Update(gameTime);
+            foreach (ClsBullet bullet in _bulletList)
+                bullet.Update(gameTime);
 
 
             //remove bullet
             foreach (ClsBullet bullet in _bulletList.ToArray())
                 if (bullet.posicao.Y <= terrain.GetY(bullet.posicao.X, bullet.posicao.Z) || bullet.posicao.Y < 0)
                     _bulletList.Remove(bullet);
+
+
+            foreach (var bullet in _bulletList.ToArray())
+            {
+
+                if (_colliderBullet.CollidedTank(bullet.posicao, bullet.posicaoAntiga, game._tankEnemy._pos))
+                {
+                    _bulletList.Remove(_bullet);
+                    game._tankEnemy._pos = new Vector3(58.0f, 0f, 58.0f);
+                    //game.tank2.boidActive = true;
+                }
+
+            }
+            
+           
 
         }
 
@@ -217,10 +236,10 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
             if (_bulletList.Count > 0)
             {
-                foreach (ClsBullet bala in _bulletList)
+                foreach (ClsBullet bullet in _bulletList)
                 {
                     // Draw the model
-                    bala.Draw(device);
+                    bullet.Draw(device);
                 }
             }
         }
