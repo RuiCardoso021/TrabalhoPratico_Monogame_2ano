@@ -45,6 +45,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         
         public Vector3 normal;
         public Vector3 _pos;
+        private bool _allowShoot = true;
 
         ClsColliderBullet _colliderBullet;
 
@@ -153,8 +154,14 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
         public void ShootBullet(Game1 game, GameTime gameTime, KeyboardState kb, ClsTerrain terrain )
         {
-            if (kb.IsKeyDown(Keys.Space))
+            if (kb.IsKeyUp(Keys.Space) && !_allowShoot)
             {
+                _allowShoot = true;
+            }
+
+            if (kb.IsKeyDown(Keys.Space) && _allowShoot)
+            {
+                _allowShoot = false;
                 Vector3 dirCanhao = _boneTransforms[10].Backward;
                 dirCanhao.Normalize();
                 Vector3 posCanhao = _boneTransforms[10].Translation;
