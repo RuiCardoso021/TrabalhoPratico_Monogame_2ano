@@ -49,8 +49,10 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private bool _allowShoot = true;
         private bool _moveTank;
 
-        ClsColliderBullet _colliderBullet;
-        ClsColliderTanks _colliderTank;
+        private ClsDust _dust;
+
+        private ClsColliderBullet _colliderBullet;
+        private ClsColliderTanks _colliderTank;
 
         public ClsTank(GraphicsDevice device, Model modelo, Vector3 position, bool moveTank, Keys[] movTank)
         {
@@ -62,6 +64,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _bulletList = new List<ClsBullet>();
             _colliderBullet = new ClsColliderBullet(4f);
             _colliderTank = new ClsColliderTanks(4f);
+            _dust = new ClsDust(device);
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -96,10 +99,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             Vector3 lastPosition = _pos;
 
             //movimento tank
-            if (_moveTank) KeyboardMove(gameTime, kb, terrain);
+            if (_moveTank) KeyboardMove(gameTime, kb, terrain, game);
             else ChaseEnemy();
-
-
 
             //limitar tank no terreno
             if (_pos.X >= 2 && _pos.X < terrain.w - 2 && _pos.Z >= 2 && _pos.Z < terrain.h - 2)
@@ -115,7 +116,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             //shoot bullet to cannon
             ShootBullet(game, gameTime, kb, terrain, otherTank);
 
-            //aplicar transformaçoes            
+            //aplicar transformaçoes
             _towerBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f * _yaw_tower)) * _turretTransform;
             _cannonBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(-45f * _yaw_cannon)) * _cannonTransform;
             _leftBackWheelBone.Transform = Matrix.CreateRotationX(MathHelper.ToRadians(45f * _yaw_wheel)) * _leftBackWheelBoneTransform;
@@ -126,15 +127,11 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _leftSteerBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f * _yaw_steer)) * _leftSteerDefaultTransform;
             _rightSteerBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f * _yaw_steer)) * _rightSteerDefaultTransform;
 
-
-
-
             // Appies transforms to bones in a cascade
             _tankModel.CopyAbsoluteBoneTransformsTo(_boneTransforms);
-
         }
 
-        public void KeyboardMove(GameTime gameTime, KeyboardState kb, ClsTerrain terrain)
+        public void KeyboardMove(GameTime gameTime, KeyboardState kb, ClsTerrain terrain, Game1 game)
         {
             //aumentar velucidade com shift
             if (kb.IsKeyDown(_movTank[10])) _vel = 15f;
@@ -143,15 +140,17 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             Vector3 posicaoRodaEsq = _boneTransforms[6].Translation;
             Vector3 posicaoRodaDir = _boneTransforms[2].Translation;
 
-
             if (kb.IsKeyDown(_movTank[1]))
             {
                 _yaw_wheel = _yaw_wheel + MathHelper.ToRadians(_vel);
+                _dust.Update(posicaoRodaEsq, gameTime, new Vector3(0.0f, -9.6f, 0.0f), terrain);
+                _dust.Update(posicaoRodaDir, gameTime, new Vector3(0.0f, -9.6f, 0.0f), terrain);
             }
             if (kb.IsKeyDown(_movTank[3]))
             {
                 _yaw_wheel = _yaw_wheel - MathHelper.ToRadians(_vel);
             }
+
             _yaw_hatch = _kb.Left_and_Right(_yaw_hatch, _speed, _movTank[4], _movTank[5]);                    //abre e fecha escutilha
             _yaw_tower = _kb.Left_and_Right(_yaw_tower, _speed, _movTank[6], _movTank[7]);                    //movimento da torre
             _yaw_cannon = _kb.Left_and_Right(_yaw_cannon, _speed, _movTank[8], _movTank[9]);                  //movimento do canhao
@@ -209,41 +208,30 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             foreach (ClsBullet bullet in _bulletList)
                 bullet.Update(gameTime);
 
-
             //remove bullet
             foreach (ClsBullet bullet in _bulletList.ToArray())
                 if (bullet.posicao.Y <= terrain.GetY(bullet.posicao.X, bullet.posicao.Z) || bullet.posicao.Y < 0)
                     _bulletList.Remove(bullet);
 
-
             foreach (var bullet in _bulletList.ToArray())
             {
-
                 if (_colliderBullet.CollidedTank(bullet.posicao, bullet.posicaoAntiga, otherTank._pos))
                 {
                     _bulletList.Remove(_bullet);
                     Random random = new Random();
                     otherTank._pos = new Vector3(random.Next(1, 60), 0, random.Next(1, 60));
                 }
-
             }
-
-
-
         }
-
 
         public void ChaseEnemy()
         {
-
             float angle = 30f;
             Vector3 pos = new Vector3(30 * MathF.Cos(angle), 0, 30 * MathF.Sin(angle));
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection, Vector3 emissiveColor)
         {
-
-
             foreach (ModelMesh mesh in _tankModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
@@ -279,6 +267,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     bullet.Draw(device);
                 }
             }
+
+            _dust.Draw(device);
         }
     }
 }
