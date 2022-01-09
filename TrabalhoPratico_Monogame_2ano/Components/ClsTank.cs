@@ -140,9 +140,15 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             if (kb.IsKeyDown(_movTank[1]))
             {
                 _yaw_wheel = _yaw_wheel + MathHelper.ToRadians(_vel);
+                _dust.Update(posicaoRodaEsq, gameTime, new Vector3(0.0f, -9.6f, 0.0f), terrain, true);
+                _dust.Update(posicaoRodaDir, gameTime, new Vector3(0.0f, -9.6f, 0.0f), terrain, true);
+            }
+            else
+            {
                 _dust.Update(posicaoRodaEsq, gameTime, new Vector3(0.0f, -9.6f, 0.0f), terrain);
                 _dust.Update(posicaoRodaDir, gameTime, new Vector3(0.0f, -9.6f, 0.0f), terrain);
             }
+
             if (kb.IsKeyDown(_movTank[3]))
             {
                 _yaw_wheel = _yaw_wheel - MathHelper.ToRadians(_vel);
@@ -223,8 +229,6 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         {
             if (isNext(otherTank.position, position))
             {
-
-
                 //_yaw_wheel = 0;
                 //_yaw_steer = 0f;
 
