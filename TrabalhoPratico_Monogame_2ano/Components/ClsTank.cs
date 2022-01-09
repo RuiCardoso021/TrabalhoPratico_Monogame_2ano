@@ -28,6 +28,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private ClsDust _dust;
         private ClsColliderBullet _colliderBullet;
         private ClsColliderTanks _colliderTank;
+
         private ModelBone _towerBone,
             _cannonBone,
             _leftBackWheelBone,
@@ -37,6 +38,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _leftSteerBone,
             _rightSteerBone,
             _hatchBone;
+
         private Matrix _turretTransform,
             _cannonTransform,
             _scale,
@@ -108,7 +110,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 position = lastPosition;
 
             //shoot bullet to cannon
-            ShootBullet(game, gameTime, kb, terrain, otherTank);
+            Shoot(game, gameTime, kb, terrain, otherTank);
 
             //aplicar transformaçoes
             _towerBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f * _yaw_tower)) * _turretTransform;
@@ -177,7 +179,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         }
 
         //shoot bullet to cannon
-        public void ShootBullet(Game1 game, GameTime gameTime, KeyboardState kb, ClsTerrain terrain, ClsTank otherTank)
+        public void Shoot(Game1 game, GameTime gameTime, KeyboardState kb, ClsTerrain terrain, ClsTank otherTank)
         {
             if (kb.IsKeyUp(_movTank[11]) && !_allowShoot)
             {
@@ -254,7 +256,6 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             if (_bulletList.Count > 0)
                 foreach (ClsBullet bullet in _bulletList)
                     bullet.Draw();
-          
 
             _dust.Draw(device);
         }
