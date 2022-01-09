@@ -11,13 +11,23 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 {
     public class ClsTank
     {
+        public Vector3 direction;
+        public Vector3 normal;
+        public Vector3 position;
+
         private const float _speed = 3f;
         private Model _tankModel;
         private ClsKeyboardManager _kb;
         private Keys[] _movTank;
         private List<ClsBullet> _bulletList;
         private ClsBullet _bullet;
-
+        private Matrix[] _boneTransforms;
+        private float _vel, _yaw, _yaw_cannon, _yaw_tower, _yaw_wheel, _yaw_hatch, _yaw_steer;
+        private bool _allowShoot = true;
+        private bool _moveTank;
+        private ClsDust _dust;
+        private ClsColliderBullet _colliderBullet;
+        private ClsColliderTanks _colliderTank;
         private ModelBone _towerBone,
             _cannonBone,
             _leftBackWheelBone,
@@ -27,7 +37,6 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _leftSteerBone,
             _rightSteerBone,
             _hatchBone;
-
         private Matrix _turretTransform,
             _cannonTransform,
             _scale,
@@ -38,21 +47,6 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _leftFrontWheelBoneTransform,
             _rightFrontWheelBoneTransform,
             _hatchBoneTransform;
-
-        private Matrix[] _boneTransforms;
-        private float _vel, _yaw, _yaw_cannon, _yaw_tower, _yaw_wheel, _yaw_hatch, _yaw_steer;
-
-        public Vector3 direction;
-
-        public Vector3 normal;
-        public Vector3 position;
-        private bool _allowShoot = true;
-        private bool _moveTank;
-
-        private ClsDust _dust;
-
-        private ClsColliderBullet _colliderBullet;
-        private ClsColliderTanks _colliderTank;
 
         public ClsTank(GraphicsDevice device, Model modelo, Vector3 position, bool moveTank, Keys[] movTank)
         {
@@ -263,30 +257,6 @@ namespace TrabalhoPratico_Monogame_2ano.Components
           
 
             _dust.Draw(device);
-        }
-
-        public float checkTankDistance(ClsTank tank)
-        {
-            Vector3 result;
-            float finalResult;
-
-            result = checkTankDirection(tank);
-            finalResult = MathF.Sqrt(MathF.Pow(result.X, 2) + MathF.Pow(result.Z, 2));
-
-            return finalResult;
-        }
-
-        public Vector3 checkTankDirection(ClsTank tank)
-        {
-            Vector3 tankPos;
-            Vector3 preResult;
-            Vector2 result;
-
-            tankPos = tank.position;
-            preResult = tankPos - position;
-            result = new Vector2(preResult.X, preResult.Z);
-
-            return preResult;
         }
     }
 }
