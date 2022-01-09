@@ -28,6 +28,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private ClsDust _dust;
         private ClsColliderBullet _colliderBullet;
         private ClsColliderTanks _colliderTank;
+        private bool _autoMove = true;
 
         private ModelBone _towerBone,
             _cannonBone,
@@ -96,9 +97,18 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             KeyboardState kb = Keyboard.GetState();
             Vector3 lastPosition = position;
 
-            //movimento tank
-            if (_moveTank) KeyboardMove(gameTime, kb, terrain, game);
-            else ChaseEnemy(otherTank, gameTime, terrain);
+            //funcionalidade extra para tank inimigo (para defenir se e autonomo)
+            if (_moveTank){
+                if (kb.IsKeyDown(Keys.O))
+                    _autoMove = true;
+                if (kb.IsKeyDown(Keys.P))
+                    _autoMove = false;
+
+                if (_autoMove) ChaseEnemy(otherTank, gameTime, terrain);
+                else KeyboardMove(gameTime, kb, terrain, game);
+
+            }else KeyboardMove(gameTime, kb, terrain, game);
+
 
             //limitar tank no terreno
             if (position.X >= 2 && position.X < terrain.w - 2 && position.Z >= 2 && position.Z < terrain.h - 2)
@@ -131,6 +141,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _tankModel.CopyAbsoluteBoneTransformsTo(_boneTransforms);
         }
 
+        //metodo para movimento por teclado
         public void KeyboardMove(GameTime gameTime, KeyboardState kb, ClsTerrain terrain, Game1 game)
         {
             //aumentar velucidade com shift
@@ -191,66 +202,117 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         //shoot bullet to cannon
         public void Shoot(Game1 game, GameTime gameTime, KeyboardState kb, ClsTerrain terrain, ClsTank otherTank)
         {
-            if (kb.IsKeyUp(_movTank[11]) && !_allowShoot)
+            //valida se está em automático
+            if (_moveTank && _autoMove)
             {
-                _allowShoot = true;
-            }
-
-            if (kb.IsKeyDown(_movTank[11]) && _allowShoot)
-            {
-                _allowShoot = false;
-                Vector3 cannonDirection = _boneTransforms[10].Backward;
-                cannonDirection.Normalize();
-                Vector3 cannonPosition = _boneTransforms[10].Translation;
-
-                for (int i = 0; i < 1; i++)
+                //valida o raio para começar a disparar e se tem permição de disparo
+                if (!LimitRadius(otherTank.position, position, 10f) && _allowShoot)
                 {
-                    _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), cannonPosition, cannonDirection);
-                    _bulletList.Add(_bullet);
+                    Vector3 cannonDirection = _boneTransforms[10].Backward;
+                    cannonDirection.Normalize();
+                    Vector3 cannonPosition = _boneTransforms[10].Translation;
+
+                    for (int i = 0; i < 1; i++)
+                    {
+                        _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), cannonPosition, cannonDirection);
+                        _bulletList.Add(_bullet);
+                    }
+                    _allowShoot = false;
+                }
+            }
+            else
+            {
+                if (kb.IsKeyUp(_movTank[11]) && !_allowShoot)
+                {
+                    _allowShoot = true;
+                }
+
+                if (kb.IsKeyDown(_movTank[11]) && _allowShoot)
+                {
+                    _allowShoot = false;
+                    Vector3 cannonDirection = _boneTransforms[10].Backward;
+                    cannonDirection.Normalize();
+                    Vector3 cannonPosition = _boneTransforms[10].Translation;
+
+                    for (int i = 0; i < 1; i++)
+                    {
+                        _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), cannonPosition, cannonDirection);
+                        _bulletList.Add(_bullet);
+                    }
                 }
             }
 
             foreach (ClsBullet bullet in _bulletList)
                 bullet.Update(gameTime);
 
+
             foreach (ClsBullet bullet in _bulletList.ToArray())
-                if (bullet.Position.Y <= terrain.GetY(bullet.Position.X, bullet.Position.Z) || bullet.Position.Y < 0)
+            {
+                if (bullet.Position.X >= 0 && bullet.Position.X < terrain.w - 1 && bullet.Position.Z >= 0 && bullet.Position.Z < terrain.h - 1)  //valida se a bola esta dentro terreno
+                {
+                    if (bullet.Position.Y <= terrain.GetY(bullet.Position.X, bullet.Position.Z) || bullet.Position.Y < 0)   //valida quando a bola bate no terreno
+                    {
+                        _bulletList.Remove(bullet);
+                        if (_moveTank && _autoMove && !_allowShoot) _allowShoot = true; //permite disparar novamente apos remover bala se estiver modo automatico
+                    }
+                }
+                else if (bullet.Position.Y < 0) //valida quando a bola obtem y menor que 0 (e se nao esta no terreno)
+                {
                     _bulletList.Remove(bullet);
+                    if (_moveTank && _autoMove && !_allowShoot) _allowShoot = true;
+                }
+            } 
+
 
             foreach (var bullet in _bulletList.ToArray())
             {
                 if (_colliderBullet.Collide(bullet.Position, bullet.LastPosition, otherTank.position))
                 {
                     _bulletList.Remove(_bullet);
-                    Random random = new Random();
-                    otherTank.position = new Vector3(random.Next(1, 60), 0, random.Next(1, 60));
+                    if (_moveTank && _autoMove && !_allowShoot) _allowShoot = true; //permite disparar novamente apos remover bala se estiver modo automatico
+                    otherTank.position = ChangeNewPosition();                                        
                 }
             }
-        }
 
-        public void ChaseEnemy(ClsTank otherTank, GameTime gameTime, ClsTerrain terrain)
-        {
             
 
+            
+        }
+
+        //funcao recursiva para obter uma posicao fora de um raio.
+        public Vector3 ChangeNewPosition()
+        {
+            Random random = new Random();
+            Vector3 newPosition = new Vector3(random.Next(2, 50), 0, random.Next(2, 50));
+            if (LimitRadius(newPosition, position, 15f)) return newPosition;
+            else return ChangeNewPosition();
+        }
+
+        //movimento autonomo
+        public void ChaseEnemy(ClsTank otherTank, GameTime gameTime, ClsTerrain terrain)
+        {
+            //effect dust in wheels
+            _dust.Update(_boneTransforms[6].Translation, gameTime, new Vector3(0.0f, -9.6f, 0.0f), terrain, true);
+            _dust.Update(_boneTransforms[2].Translation, gameTime, new Vector3(0.0f, -9.6f, 0.0f), terrain, true);
+
+            //rotation wheels
             _yaw_wheel += MathHelper.ToRadians(_vel);
 
-            if (!(position.X >= 10 && position.X < terrain.w - 10 && position.Z >= 10 && position.Z < terrain.h - 10))
+            if (!(position.X >= 3 && position.X < terrain.w - 3 && position.Z >= 3 && position.Z < terrain.h - 3))
                 _yaw += MathHelper.ToRadians(new Random().Next(1,7));
 
-            Matrix rotation;
 
-            if (!isNext(otherTank.position, position))
-            {
-                _yaw += MathHelper.ToRadians(_vel);
-                rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
+            Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
+
+            //valida o raio para começar a perseguição
+            if (!LimitRadius(otherTank.position, position, 15f))
+            {    
                 direction = otherTank.position - position;
                 direction.Normalize();
+                _yaw += MathHelper.ToRadians(_vel);
             }
-            else
-            {
-                rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
-                direction = Vector3.Transform(-Vector3.UnitZ, rotation);
-            }
+            else direction = Vector3.Transform(-Vector3.UnitZ, rotation);
+            
 
 
            
@@ -270,6 +332,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotation * translation;
         }
 
+        //desenhar tank
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection, Vector3 emissiveColor)
         {
             foreach (ModelMesh mesh in _tankModel.Meshes)
@@ -306,9 +369,9 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _dust.Draw(device);
         }
 
-        public bool isNext(Vector3 position, Vector3 enimyPosition)
+        //limitar um raio sobre uma posição
+        public bool LimitRadius(Vector3 position, Vector3 enimyPosition, float radius)
         {
-            float radius = 10f;
             //calcular o ponto medio entre os dois tanks
             float x = position.X - enimyPosition.X;
             float y = position.Y - enimyPosition.Y;
