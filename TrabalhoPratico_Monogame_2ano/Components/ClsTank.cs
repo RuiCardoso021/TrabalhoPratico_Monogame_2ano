@@ -62,6 +62,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _colliderTank = new ClsColliderTanks(4f);
             _dust = new ClsDust(device);
             _vel = 5f;
+            _yaw = 0;
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -97,15 +98,17 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
             //movimento tank
             if (_moveTank) KeyboardMove(gameTime, kb, terrain, game);
-            else ChaseEnemy(otherTank, gameTime);
+            else ChaseEnemy(otherTank, gameTime, terrain);
 
             //limitar tank no terreno
             if (position.X >= 2 && position.X < terrain.w - 2 && position.Z >= 2 && position.Z < terrain.h - 2)
             {
                 position.Y = terrain.GetY(position.X, position.Z);
                 normal = terrain.GetNormal(position.X, position.Z);
+                
             }
             else position = lastPosition;
+            
 
             if (!_colliderTank.CollidedTank(position, otherTank.position))
                 position = lastPosition;
@@ -219,7 +222,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             }
         }
 
-        public void ChaseEnemy(ClsTank otherTank, GameTime gameTime)
+        public void ChaseEnemy(ClsTank otherTank, GameTime gameTime, ClsTerrain terrain)
         {
             if (isNext(otherTank.position, position))
             {
@@ -228,25 +231,31 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 //_yaw_wheel = 0;
                 //_yaw_steer = 0f;
 
-                //_yaw = 0;
-                //Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
-                //direction = Vector3.Transform(-Vector3.UnitZ, otherTank);
-                //position = position + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-                //Vector3 right = Vector3.Cross(direction, normal);
-                //Vector3 correctedDirection = Vector3.Cross(normal, right);
-
-                //normal.Normalize();
-                //correctedDirection.Normalize();
-                //right.Normalize();
-
-                //rotation.Up = normal;
-                //rotation.Forward = correctedDirection;
-                //rotation.Right = right;
-
-                //Matrix translation = Matrix.CreateTranslation(position);
-                //_tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotation * translation;
+                
             }
+
+            if (!_moveTank) 
+
+            if (!(position.X >= 10 && position.X < terrain.w - 10 && position.Z >= 10 && position.Z < terrain.h - 10))
+                _yaw += MathHelper.ToRadians(new Random().Next(1,7));
+
+            Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
+            direction = Vector3.Transform(-Vector3.UnitZ, rotation);
+            position = position + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            Vector3 right = Vector3.Cross(direction, normal);
+            Vector3 correctedDirection = Vector3.Cross(normal, right);
+
+            normal.Normalize();
+            correctedDirection.Normalize();
+            right.Normalize();
+
+            rotation.Up = normal;
+            rotation.Forward = correctedDirection;
+            rotation.Right = right;
+
+            Matrix translation = Matrix.CreateTranslation(position);
+            _tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotation * translation;
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection, Vector3 emissiveColor)
