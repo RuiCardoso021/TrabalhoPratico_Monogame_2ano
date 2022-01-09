@@ -61,6 +61,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _colliderBullet = new ClsColliderBullet(4f);
             _colliderTank = new ClsColliderTanks(4f);
             _dust = new ClsDust(device);
+            _vel = 5f;
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -96,7 +97,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
             //movimento tank
             if (_moveTank) KeyboardMove(gameTime, kb, terrain, game);
-            else ChaseEnemy();
+            else ChaseEnemy(otherTank, gameTime);
 
             //limitar tank no terreno
             if (position.X >= 2 && position.X < terrain.w - 2 && position.Z >= 2 && position.Z < terrain.h - 2)
@@ -218,10 +219,34 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             }
         }
 
-        public void ChaseEnemy()
+        public void ChaseEnemy(ClsTank otherTank, GameTime gameTime)
         {
-            float angle = 30f;
-            Vector3 pos = new Vector3(30 * MathF.Cos(angle), 0, 30 * MathF.Sin(angle));
+            if (isNext(otherTank.position, position))
+            {
+
+
+                //_yaw_wheel = 0;
+                //_yaw_steer = 0f;
+
+                //_yaw = 0;
+                //Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
+                //direction = Vector3.Transform(-Vector3.UnitZ, otherTank);
+                //position = position + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                //Vector3 right = Vector3.Cross(direction, normal);
+                //Vector3 correctedDirection = Vector3.Cross(normal, right);
+
+                //normal.Normalize();
+                //correctedDirection.Normalize();
+                //right.Normalize();
+
+                //rotation.Up = normal;
+                //rotation.Forward = correctedDirection;
+                //rotation.Right = right;
+
+                //Matrix translation = Matrix.CreateTranslation(position);
+                //_tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotation * translation;
+            }
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection, Vector3 emissiveColor)
@@ -258,6 +283,23 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     bullet.Draw();
 
             _dust.Draw(device);
+        }
+
+        public bool isNext(Vector3 position, Vector3 enimyPosition)
+        {
+            float radius = 6f;
+            //calcular o ponto medio entre os dois tanks
+            float x = position.X - enimyPosition.X;
+            float y = position.Y - enimyPosition.Y;
+            float z = position.Z - enimyPosition.Z;
+
+            // calcular a distancia entre os dois tanks
+            float distance = (float)Math.Sqrt(x * x + y * y + z * z);
+
+            if (distance <= radius * 2)
+                return false;
+            else
+                return true;
         }
     }
 }
