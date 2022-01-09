@@ -23,7 +23,7 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
             _device = device;
             _heigth = 100;
             _radius = 230;
-            _particlePerSecond = 20;
+            _particlePerSecond = 10;
 
             _effect = new BasicEffect(device);
             _effect.VertexColorEnabled = true;

@@ -38,7 +38,6 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
             foreach (ClsParticleDust particulas in _dustParticles.ToArray())
             {
-                //if (particulas.position.Y <= terrain.GetY(particulas.position.X, particulas.position.Z))
                 if (particulas.position.Y <= 0)
                     _dustParticles.Remove(particulas);
             }
