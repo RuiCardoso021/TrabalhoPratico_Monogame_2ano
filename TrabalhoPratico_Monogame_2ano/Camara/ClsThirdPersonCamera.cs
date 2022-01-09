@@ -13,7 +13,7 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
         public override void Update(GameTime gametime, ClsTerrain terrain, ClsTank tank)
         {
             HandleMouseMovement();
-            _pos = tank._pos;
+            _pos = tank.position;
             _pos.Y = 5f;
             Vector3 right = Vector3.Cross(tank.direction, Vector3.UnitY);
             Vector3 up = Vector3.Cross(right, tank.direction);

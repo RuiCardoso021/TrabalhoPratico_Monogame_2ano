@@ -45,7 +45,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         public Vector3 direction;
 
         public Vector3 normal;
-        public Vector3 _pos;
+        public Vector3 position;
         private bool _allowShoot = true;
         private bool _moveTank;
 
@@ -56,7 +56,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
         public ClsTank(GraphicsDevice device, Model modelo, Vector3 position, bool moveTank, Keys[] movTank)
         {
-            _pos = position;
+            this.position = position;
             _tankModel = modelo;
             _moveTank = moveTank;
             _kb = new ClsKeyboardManager();
@@ -96,22 +96,22 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         public void Update(GameTime gameTime, ClsTerrain terrain, Game1 game, ClsTank otherTank)
         {
             KeyboardState kb = Keyboard.GetState();
-            Vector3 lastPosition = _pos;
+            Vector3 lastPosition = position;
 
             //movimento tank
             if (_moveTank) KeyboardMove(gameTime, kb, terrain, game);
             else ChaseEnemy();
 
             //limitar tank no terreno
-            if (_pos.X >= 2 && _pos.X < terrain.w - 2 && _pos.Z >= 2 && _pos.Z < terrain.h - 2)
+            if (position.X >= 2 && position.X < terrain.w - 2 && position.Z >= 2 && position.Z < terrain.h - 2)
             {
-                _pos.Y = terrain.GetY(_pos.X, _pos.Z);
-                normal = terrain.GetNormal(_pos.X, _pos.Z);
+                position.Y = terrain.GetY(position.X, position.Z);
+                normal = terrain.GetNormal(position.X, position.Z);
             }
-            else _pos = lastPosition;
+            else position = lastPosition;
 
-            if (!_colliderTank.CollidedTank(_pos, otherTank._pos))
-                _pos = lastPosition;
+            if (!_colliderTank.CollidedTank(position, otherTank.position))
+                position = lastPosition;
 
             //shoot bullet to cannon
             ShootBullet(game, gameTime, kb, terrain, otherTank);
@@ -165,7 +165,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _yaw = _kb.Left_and_Right(_yaw, _speed, _movTank[0], _movTank[2]);                                //movimento tank, esq, dir
             Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
             direction = Vector3.Transform(-Vector3.UnitZ, rotation);
-            _pos = _kb.MovimentWithPosition(_pos, direction, _vel, _movTank[1], _movTank[3], gameTime);       //movimento tank frente e traz
+            position = _kb.MovimentWithPosition(position, direction, _vel, _movTank[1], _movTank[3], gameTime);       //movimento tank frente e traz
 
             Vector3 right = Vector3.Cross(direction, normal);
             Vector3 correctedDirection = Vector3.Cross(normal, right);
@@ -178,7 +178,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             rotation.Forward = correctedDirection;
             rotation.Right = right;
 
-            Matrix translation = Matrix.CreateTranslation(_pos);
+            Matrix translation = Matrix.CreateTranslation(position);
             _tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotation * translation;
         }
 
@@ -193,33 +193,31 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             if (kb.IsKeyDown(_movTank[11]) && _allowShoot)
             {
                 _allowShoot = false;
-                Vector3 dirCanhao = _boneTransforms[10].Backward;
-                dirCanhao.Normalize();
-                Vector3 posCanhao = _boneTransforms[10].Translation;
+                Vector3 cannonDirection = _boneTransforms[10].Backward;
+                cannonDirection.Normalize();
+                Vector3 cannonPosition = _boneTransforms[10].Translation;
 
                 for (int i = 0; i < 1; i++)
                 {
-                    _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), posCanhao, dirCanhao);
+                    _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), cannonPosition, cannonDirection);
                     _bulletList.Add(_bullet);
                 }
             }
 
-            //update bullet
             foreach (ClsBullet bullet in _bulletList)
                 bullet.Update(gameTime);
 
-            //remove bullet
             foreach (ClsBullet bullet in _bulletList.ToArray())
-                if (bullet.posicao.Y <= terrain.GetY(bullet.posicao.X, bullet.posicao.Z) || bullet.posicao.Y < 0)
+                if (bullet.Position.Y <= terrain.GetY(bullet.Position.X, bullet.Position.Z) || bullet.Position.Y < 0)
                     _bulletList.Remove(bullet);
 
             foreach (var bullet in _bulletList.ToArray())
             {
-                if (_colliderBullet.CollidedTank(bullet.posicao, bullet.posicaoAntiga, otherTank._pos))
+                if (_colliderBullet.Collide(bullet.Position, bullet.LastPosition, otherTank.position))
                 {
                     _bulletList.Remove(_bullet);
                     Random random = new Random();
-                    otherTank._pos = new Vector3(random.Next(1, 60), 0, random.Next(1, 60));
+                    otherTank.position = new Vector3(random.Next(1, 60), 0, random.Next(1, 60));
                 }
             }
         }
@@ -245,6 +243,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     effect.DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f);
                     effect.SpecularColor = new Vector3(0.0f, 0.0f, 0.0f);
                     effect.SpecularPower = 127;
+
                     Vector3 lightDirection = new Vector3(1.0f, -1f, 1f);
                     lightDirection.Normalize();
                     effect.DirectionalLight0.Direction = lightDirection;
@@ -255,20 +254,39 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     effect.EnableDefaultLighting();
                 }
 
-                // Draw each mesh of the model
                 mesh.Draw();
             }
 
             if (_bulletList.Count > 0)
-            {
                 foreach (ClsBullet bullet in _bulletList)
-                {
-                    // Draw the model
-                    bullet.Draw(device);
-                }
-            }
+                    bullet.Draw();
+          
 
             _dust.Draw(device);
+        }
+
+        public float checkTankDistance(ClsTank tank)
+        {
+            Vector3 result;
+            float finalResult;
+
+            result = checkTankDirection(tank);
+            finalResult = MathF.Sqrt(MathF.Pow(result.X, 2) + MathF.Pow(result.Z, 2));
+
+            return finalResult;
+        }
+
+        public Vector3 checkTankDirection(ClsTank tank)
+        {
+            Vector3 tankPos;
+            Vector3 preResult;
+            Vector2 result;
+
+            tankPos = tank.position;
+            preResult = tankPos - position;
+            result = new Vector2(preResult.X, preResult.Z);
+
+            return preResult;
         }
     }
 }

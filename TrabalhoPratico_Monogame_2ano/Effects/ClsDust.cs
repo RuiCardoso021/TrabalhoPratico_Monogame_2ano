@@ -2,70 +2,67 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TrabalhoPratico_Monogame_2ano.Components;
 
 namespace TrabalhoPratico_Monogame_2ano.Effects
 {
     class ClsDust
     {
-
-        BasicEffect effect;
-        Random random;
-
-        public List<ClsParticleDust> listaParticulasFumo;
-
-        float diametro;
+        private BasicEffect _effect;
+        private Random _random;
+        private List<ClsParticleDust> _dustParticles;
+        private float _radius;
 
         public ClsDust(GraphicsDevice device)
         {
+            _effect = new BasicEffect(device);
+            _effect.LightingEnabled = false;
+            _effect.VertexColorEnabled = true;
 
-            effect = new BasicEffect(device);
-
-            diametro = 1f;
-            random = new Random();
-            listaParticulasFumo = new List<ClsParticleDust>();
-
-            effect.LightingEnabled = false;
-            effect.VertexColorEnabled = true;
+            _radius = 1f;
+            _random = new Random();
+            _dustParticles = new List<ClsParticleDust>();
         }
 
-        public void Update(Vector3 posicaoRoda, GameTime gameTime, Vector3 gravidade, ClsTerrain terrain)
+        public void Update(Vector3 wheelPosition, GameTime gameTime, Vector3 gravity, ClsTerrain terrain)
         {
-            Vector3 posicaoTemp = new Vector3(posicaoRoda.X + (diametro * (float)random.NextDouble() - (diametro / 2)), posicaoRoda.Y, posicaoRoda.Z + (diametro * (float)random.NextDouble() - (diametro / 2)));
-            ClsParticleDust particula = new ClsParticleDust(posicaoTemp, new Vector3(diametro * (float)random.NextDouble() - (diametro / 2), 10f, diametro * (float)random.NextDouble() - (diametro / 2)));
-            listaParticulasFumo.Add(particula);
+            Vector3 particlePosition = new Vector3(wheelPosition.X + (_radius * (float)_random.NextDouble() - (_radius / 2)), wheelPosition.Y, wheelPosition.Z + (_radius * (float)_random.NextDouble() - (_radius / 2)));
+            ClsParticleDust particle = new ClsParticleDust(particlePosition, new Vector3(_radius * (float)_random.NextDouble() - (_radius / 2), 10f, _radius * (float)_random.NextDouble() - (_radius / 2)));
+            _dustParticles.Add(particle);
 
-            foreach (ClsParticleDust particulas in listaParticulasFumo)
-            {
-                particulas.Update(gameTime, gravidade);
-            }
+            foreach (ClsParticleDust particulas in _dustParticles)
+                particulas.Update(gameTime, gravity);
+            
 
-            foreach (ClsParticleDust particulas in listaParticulasFumo.ToArray())
+            foreach (ClsParticleDust particulas in _dustParticles.ToArray())
             {
                 //if (particulas.position.Y <= terrain.GetY(particulas.position.X, particulas.position.Z))
                 if (particulas.position.Y <= 0)
-                    listaParticulasFumo.Remove(particulas);
+                    _dustParticles.Remove(particulas);
             }
         }
 
         public void Draw(GraphicsDevice graphicsDevice)
         {
-            if (listaParticulasFumo.Count > 0)
+            if (_dustParticles.Count > 0)
             {
-                effect.View = ClsCamera.Instance.view;
-                effect.Projection = ClsCamera.Instance.projection; ;
-                effect.World = Matrix.Identity;
+                _effect.View = ClsCamera.Instance.view;
+                _effect.Projection = ClsCamera.Instance.projection;
+                _effect.World = Matrix.Identity;
 
-                VertexPositionColor[] particulasVertices;
-                particulasVertices = new VertexPositionColor[2 * listaParticulasFumo.Count];
+                VertexPositionColor[] vertices;
+                vertices = new VertexPositionColor[2 * _dustParticles.Count];
+                
+                float size = 0.15f;
 
-                for (int i = 0; i < listaParticulasFumo.Count; i++)
+                for (int i = 0; i < _dustParticles.Count; i++)
                 {
-                    particulasVertices[2 * i] = new VertexPositionColor(listaParticulasFumo[i].position, Color.Black);
-                    particulasVertices[2 * i + 1] = new VertexPositionColor(listaParticulasFumo[i].position - new Vector3(0f, 0.1f, 0f), Color.Black);
+                    vertices[2 * i] = new VertexPositionColor(_dustParticles[i].position, Color.Brown);
+                    vertices[2 * i + 1] = new VertexPositionColor(_dustParticles[i].position + Vector3.Normalize(_dustParticles[i].velocity) * size, Color.Brown);
                 }
 
-                effect.CurrentTechnique.Passes[0].Apply();
-                graphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.LineList, particulasVertices, 0, listaParticulasFumo.Count);
+                _effect.CurrentTechnique.Passes[0].Apply();
+                graphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.LineList, vertices, 0, _dustParticles.Count);
             }
         }
     }
