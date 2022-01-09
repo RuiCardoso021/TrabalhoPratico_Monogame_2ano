@@ -19,7 +19,7 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
             _effect.LightingEnabled = false;
             _effect.VertexColorEnabled = true;
 
-            _radius = 1f;
+            _radius = 2;
             _random = new Random();
             _dustParticles = new List<ClsParticleDust>();
         }
@@ -38,9 +38,9 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
             foreach (ClsParticleDust particulas in _dustParticles.ToArray())
             {
-                //if (particulas.position.Y <= terrain.GetY(particulas.position.X, particulas.position.Z))
-                if (particulas.position.Y <= 0)
-                    _dustParticles.Remove(particulas);
+                if (particulas.position.X >= 0 && particulas.position.X < terrain.w - 1 && particulas.position.Z >= 0 && particulas.position.Z < terrain.h - 1)
+                    if (particulas.position.Y <= terrain.GetY(particulas.position.X, particulas.position.Z)) _dustParticles.Remove(particulas);
+                else if (particulas.position.Y <= 0) _dustParticles.Remove(particulas);
             }
         }
 
@@ -59,8 +59,8 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
                 for (int i = 0; i < _dustParticles.Count; i++)
                 {
-                    vertices[2 * i] = new VertexPositionColor(_dustParticles[i].position, Color.Brown);
-                    vertices[2 * i + 1] = new VertexPositionColor(_dustParticles[i].position + Vector3.Normalize(_dustParticles[i].velocity) * size, Color.Brown);
+                    vertices[2 * i] = new VertexPositionColor(_dustParticles[i].position, Color.SandyBrown);
+                    vertices[2 * i + 1] = new VertexPositionColor(_dustParticles[i].position + Vector3.Normalize(_dustParticles[i].velocity) * size, Color.SandyBrown);
                 }
 
                 _effect.CurrentTechnique.Passes[0].Apply();
