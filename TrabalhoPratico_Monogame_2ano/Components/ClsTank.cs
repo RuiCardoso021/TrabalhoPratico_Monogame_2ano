@@ -230,23 +230,31 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
         public void ChaseEnemy(ClsTank otherTank, GameTime gameTime, ClsTerrain terrain)
         {
-            if (isNext(otherTank.position, position))
-            {
-                //_yaw_wheel = 0;
-                //_yaw_steer = 0f;
+            
 
-                
-            }
-
-            if (!_moveTank) 
+            _yaw_wheel += MathHelper.ToRadians(_vel);
 
             if (!(position.X >= 10 && position.X < terrain.w - 10 && position.Z >= 10 && position.Z < terrain.h - 10))
                 _yaw += MathHelper.ToRadians(new Random().Next(1,7));
 
-            Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
-            direction = Vector3.Transform(-Vector3.UnitZ, rotation);
-            position = position + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Matrix rotation;
 
+            if (!isNext(otherTank.position, position))
+            {
+                _yaw += MathHelper.ToRadians(_vel);
+                rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
+                direction = otherTank.position - position;
+                direction.Normalize();
+            }
+            else
+            {
+                rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
+                direction = Vector3.Transform(-Vector3.UnitZ, rotation);
+            }
+
+
+           
+            position = position + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
             Vector3 right = Vector3.Cross(direction, normal);
             Vector3 correctedDirection = Vector3.Cross(normal, right);
 
@@ -300,7 +308,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
         public bool isNext(Vector3 position, Vector3 enimyPosition)
         {
-            float radius = 6f;
+            float radius = 10f;
             //calcular o ponto medio entre os dois tanks
             float x = position.X - enimyPosition.X;
             float y = position.Y - enimyPosition.Y;
