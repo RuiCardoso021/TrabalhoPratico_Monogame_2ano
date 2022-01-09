@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TrabalhoPratico_Monogame_2ano.Components;
 
 namespace TrabalhoPratico_Monogame_2ano.Effects
 {
@@ -11,19 +12,18 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
         private Random _random;
         private BasicEffect _effect;
         private GraphicsDevice _device;
-        private float _altura;
-        private float _raio;
-        private int _particulas_por_segundo;
-
+        private float _heigth;
+        private float _radius;
+        private int _particlePerSecond;
 
         public ClsRain(GraphicsDevice device)
         {
             _random = new Random();
             _particulas = new List<ClsParticleRain>();
             _device = device;
-            _altura = 100;
-            _raio = 230;
-            _particulas_por_segundo = 20;
+            _heigth = 100;
+            _radius = 230;
+            _particlePerSecond = 20;
 
             _effect = new BasicEffect(device);
             _effect.VertexColorEnabled = true;
@@ -34,8 +34,8 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
         {
             //generate position
             float angle = (float)_random.NextDouble() * 2 * MathF.PI;
-            float d = (float)_random.NextDouble() * _raio;
-            Vector3 pos = new Vector3(d * MathF.Cos(angle), _altura, d * MathF.Sin(angle));
+            float d = (float)_random.NextDouble() * _radius;
+            Vector3 pos = new Vector3(d * MathF.Cos(angle), _heigth, d * MathF.Sin(angle));
 
             //random number * normal to calculate vel
             Vector3 vel = (float)_random.NextDouble() * Vector3.Down;
@@ -49,19 +49,19 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
         public void Update(GameTime gameTime, ClsTerrain terreno)
         {
 
-            int particulas_a_gerar = (int)(Math.Round(_particulas_por_segundo * (float)gameTime.ElapsedGameTime.TotalMilliseconds));
+            int pariclesToGenerate = (int)(Math.Round(_particlePerSecond * (float)gameTime.ElapsedGameTime.TotalMilliseconds));
 
             //create particula
-            for (int i = 0; i < particulas_a_gerar; i++)
+            for (int i = 0; i < pariclesToGenerate; i++)
             {
-                ClsParticleRain gerada = Generate();
-                if (terreno.TerrainLimit(gerada.pos.X, gerada.pos.Z))
-                    _particulas.Add(gerada);
+                ClsParticleRain newParticle = Generate();
+                if (terreno.TerrainLimit(newParticle.position.X, newParticle.position.Z))
+                    _particulas.Add(newParticle);
             }
 
             //remove particula if position y = 0
             for (int i = _particulas.Count - 1; i >= 0; i--)
-                if (_particulas[i].pos.Y < 0 || !(terreno.TerrainLimit(_particulas[i].pos.X, _particulas[i].pos.Z)))
+                if (_particulas[i].position.Y < 0 || !(terreno.TerrainLimit(_particulas[i].position.X, _particulas[i].position.Z)))
                     _particulas.RemoveAt(i);
 
             //update to particulas
@@ -81,8 +81,8 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
             for (int i = 0; i < _particulas.Count; i++)
             {
-                vertices[2 * i] = new VertexPositionColor(_particulas[i].pos, Color.White);
-                vertices[2 * i + 1] = new VertexPositionColor(_particulas[i].pos + Vector3.Normalize(_particulas[i].vel) * size, Color.White);
+                vertices[2 * i] = new VertexPositionColor(_particulas[i].position, Color.White);
+                vertices[2 * i + 1] = new VertexPositionColor(_particulas[i].position + Vector3.Normalize(_particulas[i].velocity) * size, Color.White);
             }
             _effect.CurrentTechnique.Passes[0].Apply();
 

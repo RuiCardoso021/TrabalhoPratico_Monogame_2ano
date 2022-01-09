@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TrabalhoPratico_Monogame_2ano
+namespace TrabalhoPratico_Monogame_2ano.Components
 {
     public class ClsTerrain
     {

@@ -1,51 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TrabalhoPratico_Monogame_2ano.Components
 {
-    class ClsBullet
+    internal class ClsBullet
     {
-        float gravidade = 7.5f;
-        float scale = 0.2f;
+        private float _gravity = 7.5f;
+        private float _scale = 0.2f;
+        private Model _bulletModel;
+        private Vector3 _velocity;
+        private Matrix _world;
 
-        Model bala;
-        Vector3 velocidade;
-        public Vector3 posicao, posicaoAntiga;
+        public Vector3 Position;
+        public Vector3 LastPosition;
 
-        Matrix world;
-
-        public ClsBullet(Model bala, Vector3 posicaoTanque, Vector3 direcaoTanque)
+        public ClsBullet(Model bulletModel, Vector3 tankPosition, Vector3 tankDirection)
         {
-            this.bala = bala;
+            this._bulletModel = bulletModel;
+            this.Position = tankPosition;
 
-            this.posicao = posicaoTanque;
-            velocidade = direcaoTanque;
-            velocidade.Normalize();
-            velocidade *= 20f;
+            _velocity = tankDirection;
+            _velocity.Normalize();
+            _velocity *= 20f;
         }
 
         public void Update(GameTime gameTime)
         {
-            posicaoAntiga = posicao;
+            LastPosition = Position;
 
-            velocidade += Vector3.Down * gravidade * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            posicao += velocidade * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _velocity += Vector3.Down * _gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += _velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            Matrix escala = Matrix.CreateScale(scale);
-            Matrix translacao = Matrix.CreateTranslation(posicao);
+            Matrix escala = Matrix.CreateScale(_scale);
+            Matrix translacao = Matrix.CreateTranslation(Position);
 
-            world = escala * translacao;
+            _world = escala * translacao;
         }
 
-        public void Draw(GraphicsDevice device)
+        public void Draw()
         {
-            foreach (ModelMesh mesh in bala.Meshes)
+            foreach (ModelMesh mesh in _bulletModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = world;
+                    effect.World = _world;
                     effect.View = ClsCamera.Instance.view;
                     effect.Projection = ClsCamera.Instance.projection;
                     effect.EnableDefaultLighting();

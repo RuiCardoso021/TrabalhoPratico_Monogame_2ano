@@ -1,43 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace TrabalhoPratico_Monogame_2ano.Collider
 {
-    class ClsColliderTanks
+    internal class ClsColliderTanks
     {
-        float raio;
-        float x, y, z;
-        float distancia;
-
+        private float _radius;
+        private float _x, _y, _z;
+        private float _distance;
 
         public ClsColliderTanks(float raio)
         {
-            this.raio = raio;
+            this._radius = raio;
         }
 
-        public bool CollidedTank(Vector3 posicaoTank, Vector3 posicaoInimigo)
+        public bool CollidedTank(Vector3 position, Vector3 enimyPosition)
         {
             //calcular o ponto medio entre os dois tanks
-            x = posicaoTank.X - posicaoInimigo.X;
-            y = posicaoTank.Y - posicaoInimigo.Y;
-            z = posicaoTank.Z - posicaoInimigo.Z;
-
+            _x = position.X - enimyPosition.X;
+            _y = position.Y - enimyPosition.Y;
+            _z = position.Z - enimyPosition.Z;
 
             // calcular a distancia entre os dois tanks
-            distancia = (float)Math.Sqrt(x * x + y * y + z * z);
+            _distance = (float)Math.Sqrt(_x * _x + _y * _y + _z * _z);
 
-
-            if (distancia <= raio * 2)
-            {
+            if (_distance <= _radius * 2)
                 return false;
-            }
             else
-            {
-                // significa que os tanks colidiram 
                 return true;
-            }
         }
     }
 }

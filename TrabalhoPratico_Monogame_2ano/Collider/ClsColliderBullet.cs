@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace TrabalhoPratico_Monogame_2ano.Collider
 {
-    class ClsColliderBullet
+    internal class ClsColliderBullet
     {
-        float raio;
+        private float _radius;
 
-        public ClsColliderBullet(float raio)
+        public ClsColliderBullet(float radius)
         {
-            this.raio = raio;
+            this._radius = radius;
         }
 
-        //formula de heron
-        public bool CollidedTank(Vector3 posA, Vector3 posB, Vector3 posC)
+        public bool Collide(Vector3 posA, Vector3 posB, Vector3 posC)
         {
             Vector3 disA = posC - posB;
             Vector3 disB = posC - posA;
             Vector3 disC = posA - posB;
-
 
             float a = disA.Length();
             float b = disB.Length();
@@ -33,20 +29,14 @@ namespace TrabalhoPratico_Monogame_2ano.Collider
             float AC = Vector3.Dot(disA, disC);
             float BC = Vector3.Dot(disB, disC);
 
-
             if (AC > 0 && BC <= 0)
             {
                 float sp = (a + b + c) / 2;
-
                 float area = (float)Math.Sqrt(sp * (sp - a) * (sp - b) * (sp - c));
-
                 float d = 2 * area / c;
 
-                if (d <= raio)
-                {
+                if (d <= _radius)
                     return true;
-
-                }
             }
             return false;
         }
