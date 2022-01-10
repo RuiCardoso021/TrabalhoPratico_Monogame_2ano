@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -14,6 +15,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         public Vector3 direction;
         public Vector3 normal;
         public Vector3 position;
+        public Vector3 cannonDirection;
+        public Vector3 cannonPosition;
 
         private const float _speed = 3f;
         private Model _tankModel;
@@ -29,6 +32,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private ClsColliderBullet _colliderBullet;
         private ClsColliderTanks _colliderTank;
         private bool _autoMove = true;
+        private Game1 game;
+        private ClsSoundEffect _soundDead, _soundShot;
 
         private ModelBone _towerBone,
             _cannonBone,
@@ -51,8 +56,9 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _rightFrontWheelBoneTransform,
             _hatchBoneTransform;
 
-        public ClsTank(GraphicsDevice device, Model modelo, Vector3 position, bool moveTank, Keys[] movTank)
+        public ClsTank(GraphicsDevice device, Game1 game1, Model modelo, Vector3 position, bool moveTank, Keys[] movTank)
         {
+            game = game1;
             this.position = position;
             _tankModel = modelo;
             _moveTank = moveTank;
@@ -64,6 +70,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _dust = new ClsDust(device);
             _vel = 5f;
             _yaw = 0;
+            _soundDead = new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/win"), 0.03f);
+            _soundShot = new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/shot"), 0.3f);
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -92,7 +100,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _scale = Matrix.CreateScale(0.01f);
         }
 
-        public void Update(GameTime gameTime, ClsTerrain terrain, Game1 game, ClsTank otherTank)
+        public void Update(GameTime gameTime, ClsTerrain terrain, ClsTank otherTank)
         {
             KeyboardState kb = Keyboard.GetState();
             Vector3 lastPosition = position;
@@ -105,9 +113,9 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     _autoMove = false;
 
                 if (_autoMove) ChaseEnemy(otherTank, gameTime, terrain);
-                else KeyboardMove(gameTime, kb, terrain, game);
+                else KeyboardMove(gameTime, kb, terrain);
 
-            }else KeyboardMove(gameTime, kb, terrain, game);
+            }else KeyboardMove(gameTime, kb, terrain);
 
 
             //limitar tank no terreno
@@ -123,8 +131,12 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             if (!_colliderTank.CollidedTank(position, otherTank.position))
                 position = lastPosition;
 
+
+            cannonDirection = _boneTransforms[10].Backward;
+            cannonDirection.Normalize();
+            cannonPosition = _boneTransforms[10].Translation;
             //shoot bullet to cannon
-            Shoot(game, gameTime, kb, terrain, otherTank);
+            Shoot(gameTime, kb, terrain, otherTank);
 
             //aplicar transformaçoes
             _towerBone.Transform = Matrix.CreateRotationY(MathHelper.ToRadians(45f * _yaw_tower)) * _turretTransform;
@@ -142,7 +154,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         }
 
         //metodo para movimento por teclado
-        public void KeyboardMove(GameTime gameTime, KeyboardState kb, ClsTerrain terrain, Game1 game)
+        public void KeyboardMove(GameTime gameTime, KeyboardState kb, ClsTerrain terrain)
         {
             //aumentar velucidade com shift
             if (kb.IsKeyDown(_movTank[10])) _vel = 15f;
@@ -200,7 +212,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         }
 
         //shoot bullet to cannon
-        public void Shoot(Game1 game, GameTime gameTime, KeyboardState kb, ClsTerrain terrain, ClsTank otherTank)
+        public void Shoot(GameTime gameTime, KeyboardState kb, ClsTerrain terrain, ClsTank otherTank)
         {
             //valida se está em automático
             if (_moveTank && _autoMove)
@@ -208,14 +220,11 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 //valida o raio para começar a disparar e se tem permição de disparo
                 if (!LimitRadius(otherTank.position, position, 10f) && _allowShoot)
                 {
-                    Vector3 cannonDirection = _boneTransforms[10].Backward;
-                    cannonDirection.Normalize();
-                    Vector3 cannonPosition = _boneTransforms[10].Translation;
-
                     for (int i = 0; i < 1; i++)
                     {
                         _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), cannonPosition, cannonDirection);
                         _bulletList.Add(_bullet);
+                        _soundShot.PlayWithLoop();
                     }
                     _allowShoot = false;
                 }
@@ -230,14 +239,15 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 if (kb.IsKeyDown(_movTank[11]) && _allowShoot)
                 {
                     _allowShoot = false;
-                    Vector3 cannonDirection = _boneTransforms[10].Backward;
+                    cannonDirection = _boneTransforms[10].Backward;
                     cannonDirection.Normalize();
-                    Vector3 cannonPosition = _boneTransforms[10].Translation;
+                    cannonPosition = _boneTransforms[10].Translation;
 
                     for (int i = 0; i < 1; i++)
                     {
                         _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), cannonPosition, cannonDirection);
                         _bulletList.Add(_bullet);
+                        _soundShot.PlayWithLoop();
                     }
                 }
             }
@@ -270,7 +280,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 {
                     _bulletList.Remove(_bullet);
                     if (_moveTank && _autoMove && !_allowShoot) _allowShoot = true; //permite disparar novamente apos remover bala se estiver modo automatico
-                    otherTank.position = ChangeNewPosition();                                        
+                    otherTank.position = ChangeNewPosition();
+                    _soundDead.PlayWithLoop();
                 }
             }
 

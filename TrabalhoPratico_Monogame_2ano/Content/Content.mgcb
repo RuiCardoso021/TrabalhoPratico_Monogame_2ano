@@ -25,6 +25,24 @@
 /processorParam:TextureFormat=Color
 /build:lh3d1.jpg
 
+#begin SoundEffect/rain.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundEffect/rain.wav
+
+#begin SoundEffect/shot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundEffect/shot.wav
+
+#begin SoundEffect/win.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundEffect/win.wav
+
 #begin texture.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
