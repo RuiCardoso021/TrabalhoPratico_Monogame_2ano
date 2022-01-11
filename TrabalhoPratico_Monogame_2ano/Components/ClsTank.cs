@@ -33,7 +33,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private ClsColliderTanks _colliderTank;
         private bool _autoMove = true;
         private Game1 game;
-        private ClsSoundEffect _soundDead, _soundShot;
+        private ClsSoundEffect _soundHeart;
 
         private ModelBone _towerBone,
             _cannonBone,
@@ -70,8 +70,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _dust = new ClsDust(device);
             _vel = 5f;
             _yaw = 0;
-            _soundDead = new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/win"), 0.03f);
-            _soundShot = new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/shot"), 0.3f);
+            _soundHeart = new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/heart"), 1f);
 
             _leftBackWheelBone = _tankModel.Bones["l_back_wheel_geo"];
             _rightBackWheelBone = _tankModel.Bones["r_back_wheel_geo"];
@@ -113,9 +112,9 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     _autoMove = false;
 
                 if (_autoMove) ChaseEnemy(otherTank, gameTime, terrain);
-                else KeyboardMove(gameTime, kb, terrain);
+                else KeyboardMove(gameTime, kb, terrain, otherTank);
 
-            }else KeyboardMove(gameTime, kb, terrain);
+            }else KeyboardMove(gameTime, kb, terrain, otherTank);
 
 
             //limitar tank no terreno
@@ -154,8 +153,12 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         }
 
         //metodo para movimento por teclado
-        public void KeyboardMove(GameTime gameTime, KeyboardState kb, ClsTerrain terrain)
+        public void KeyboardMove(GameTime gameTime, KeyboardState kb, ClsTerrain terrain, ClsTank otherTank)
         {
+            //efeito som se estiver a ser perseguido
+            if (!LimitRadius(position, otherTank.position, 15f) && otherTank._autoMove && otherTank._moveTank)
+                _soundHeart.PlayWithLoop();
+
             //aumentar velucidade com shift
             if (kb.IsKeyDown(_movTank[10])) _vel = 15f;
             else _vel = 5f;
@@ -224,7 +227,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     {
                         _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), cannonPosition, cannonDirection);
                         _bulletList.Add(_bullet);
-                        _soundShot.PlayWithLoop();
+                        new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/shot"), 0.3f).PlayWithLoop();
                     }
                     _allowShoot = false;
                 }
@@ -247,7 +250,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     {
                         _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), cannonPosition, cannonDirection);
                         _bulletList.Add(_bullet);
-                        _soundShot.PlayWithLoop();
+                        new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/shot"), 0.3f).PlayWithLoop();
                     }
                 }
             }
@@ -281,7 +284,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     _bulletList.Remove(_bullet);
                     if (_moveTank && _autoMove && !_allowShoot) _allowShoot = true; //permite disparar novamente apos remover bala se estiver modo automatico
                     otherTank.position = ChangeNewPosition();
-                    _soundDead.PlayWithLoop();
+                    new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/win"), 0.03f).PlayWithLoop();
                 }
             }
 
