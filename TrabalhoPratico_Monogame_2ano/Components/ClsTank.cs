@@ -242,9 +242,6 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 if (kb.IsKeyDown(_movTank[11]) && _allowShoot)
                 {
                     _allowShoot = false;
-                    cannonDirection = _boneTransforms[10].Backward;
-                    cannonDirection.Normalize();
-                    cannonPosition = _boneTransforms[10].Translation;
 
                     for (int i = 0; i < 1; i++)
                     {
