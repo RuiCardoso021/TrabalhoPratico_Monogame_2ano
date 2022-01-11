@@ -44,7 +44,7 @@ namespace TrabalhoPratico_Monogame_2ano
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            ClsCamera.UpdateCamera(gameTime, _graphics.GraphicsDevice, _tankEnemy, _terrain);
+            ClsCamera.UpdateCamera(gameTime, _graphics.GraphicsDevice, _tank, _terrain);
             _tank.Update(gameTime, _terrain, _tankEnemy);
             _tankEnemy.Update(gameTime, _terrain, _tank);
             _effectRain.Update(gameTime, _terrain);
