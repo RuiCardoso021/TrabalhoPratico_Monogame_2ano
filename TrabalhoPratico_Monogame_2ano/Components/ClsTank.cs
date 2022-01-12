@@ -226,11 +226,11 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
             Vector3 v = direction * _vel;
 
-            Vector3 A = (Vseek - v);
-            A.Normalize();
-            A *= aMax;
+            Vector3 a = (Vseek - v);
+            a.Normalize();
+            a *= aMax;
 
-            v = v + A * (float)gametime.ElapsedGameTime.TotalSeconds;
+            v = v + a * (float)gametime.ElapsedGameTime.TotalSeconds;
 
             _vel = v.Length();
             direction = v;
