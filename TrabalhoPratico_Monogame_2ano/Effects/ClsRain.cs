@@ -23,7 +23,7 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
             _device = device;
             _heigth = 100;
             _radius = 230;
-            _particlePerSecond = 10;
+            _particlePerSecond = 5;
 
             _effect = new BasicEffect(device);
             _effect.VertexColorEnabled = true;
@@ -81,8 +81,8 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
             for (int i = 0; i < _particulas.Count; i++)
             {
-                vertices[2 * i] = new VertexPositionColor(_particulas[i].position, Color.White);
-                vertices[2 * i + 1] = new VertexPositionColor(_particulas[i].position + Vector3.Normalize(_particulas[i].velocity) * size, Color.White);
+                vertices[2 * i] = new VertexPositionColor(_particulas[i].position, Color.LightBlue);
+                vertices[2 * i + 1] = new VertexPositionColor(_particulas[i].position + Vector3.Normalize(_particulas[i].velocity) * size, Color.LightBlue);
             }
             _effect.CurrentTechnique.Passes[0].Apply();
 
