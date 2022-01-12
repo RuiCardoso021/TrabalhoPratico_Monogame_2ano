@@ -15,6 +15,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         public Vector3 direction;
         public Vector3 normal;
         public Vector3 position;
+        public Matrix rotation;
         public Vector3 cannonDirection;
         public Vector3 cannonPosition;
 
@@ -96,6 +97,9 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             // create array to store final bone transforms
             _boneTransforms = new Matrix[_tankModel.Bones.Count];
 
+            rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
+            direction = Vector3.Transform(-Vector3.UnitZ, rotation);
+
             _scale = Matrix.CreateScale(0.01f);
         }
 
@@ -105,7 +109,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             Vector3 lastPosition = position;
 
             //funcionalidade extra para tank inimigo (para defenir se e autonomo)
-            if (_moveTank){
+            if (_moveTank)
+            {
                 if (kb.IsKeyDown(Keys.O))
                     _autoMove = true;
                 if (kb.IsKeyDown(Keys.P))
@@ -113,23 +118,19 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
                 if (_autoMove) ChaseEnemy(otherTank, gameTime, terrain);
                 else KeyboardMove(gameTime, kb, terrain, otherTank);
-
-            }else KeyboardMove(gameTime, kb, terrain, otherTank);
-
+            }
+            else KeyboardMove(gameTime, kb, terrain, otherTank);
 
             //limitar tank no terreno
             if (position.X >= 2 && position.X < terrain.w - 2 && position.Z >= 2 && position.Z < terrain.h - 2)
             {
                 position.Y = terrain.GetY(position.X, position.Z);
                 normal = terrain.GetNormal(position.X, position.Z);
-                
             }
             else position = lastPosition;
-            
 
             if (!_colliderTank.CollidedTank(position, otherTank.position))
                 position = lastPosition;
-
 
             cannonDirection = _boneTransforms[10].Backward;
             cannonDirection.Normalize();
@@ -214,6 +215,28 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _tankModel.Root.Transform = _scale * Matrix.CreateRotationY(MathHelper.Pi) * rotation * translation;
         }
 
+        private void Pursuite(ClsTank tank, GameTime gametime)
+        {
+            float aMax = 5f, velMax = 5f;
+
+            Vector3 Vseek = tank.position - position;
+            Vseek.Normalize();
+            Vseek *= velMax;
+            direction.Normalize();
+
+            Vector3 v = direction * _vel;
+
+            Vector3 A = (Vseek - v);
+            A.Normalize();
+            A *= aMax;
+
+            v = v + A * (float)gametime.ElapsedGameTime.TotalSeconds;
+
+            _vel = v.Length();
+            direction = v;
+            direction.Normalize();
+        }
+
         //shoot bullet to cannon
         public void Shoot(GameTime gameTime, KeyboardState kb, ClsTerrain terrain, ClsTank otherTank)
         {
@@ -255,7 +278,6 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             foreach (ClsBullet bullet in _bulletList)
                 bullet.Update(gameTime);
 
-
             foreach (ClsBullet bullet in _bulletList.ToArray())
             {
                 if (bullet.Position.X >= 0 && bullet.Position.X < terrain.w - 1 && bullet.Position.Z >= 0 && bullet.Position.Z < terrain.h - 1)  //valida se a bola esta dentro terreno
@@ -271,8 +293,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     _bulletList.Remove(bullet);
                     if (_moveTank && _autoMove && !_allowShoot) _allowShoot = true;
                 }
-            } 
-
+            }
 
             foreach (var bullet in _bulletList.ToArray())
             {
@@ -284,10 +305,6 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/win"), 0.03f).PlayWithLoop();
                 }
             }
-
-            
-
-            
         }
 
         //funcao recursiva para obter uma posicao fora de um raio.
@@ -310,23 +327,14 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _yaw_wheel += MathHelper.ToRadians(_vel);
 
             if (!(position.X >= 3 && position.X < terrain.w - 3 && position.Z >= 3 && position.Z < terrain.h - 3))
-                _yaw += MathHelper.ToRadians(new Random().Next(1,7));
-
+                _yaw += MathHelper.ToRadians(new Random().Next(1, 7));
 
             Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
 
             //valida o raio para começar a perseguição
             if (!LimitRadius(otherTank.position, position, 15f))
-            {    
-                direction = otherTank.position - position;
-                direction.Normalize();
-                _yaw += MathHelper.ToRadians(_vel);
-            }
-            else direction = Vector3.Transform(-Vector3.UnitZ, rotation);
-            
+                Pursuite(otherTank, gameTime);
 
-
-           
             position = position + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
             Vector3 right = Vector3.Cross(direction, normal);
             Vector3 correctedDirection = Vector3.Cross(normal, right);
