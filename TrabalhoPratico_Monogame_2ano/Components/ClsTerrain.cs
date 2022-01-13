@@ -12,11 +12,11 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         private BasicEffect _effect;
         private float _vScale;
         private Texture2D _textureImg;
-        private VertexPositionNormalTexture[] vertices;
+        private VertexPositionNormalTexture[] _vertices;
 
-        public float[,] heights;
-        public int w, h;
-        public Vector3[,] normals;
+        public float[,] Heights;
+        public int W, H;
+        public Vector3[,] Normals;
 
         public ClsTerrain(GraphicsDevice device, Texture2D heightMap, Texture2D texture)
         {
@@ -46,7 +46,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         //limite terreno
         public bool TerrainLimit(float x, float z)
         {
-            if (x >= -0 && x < w - 2 && z >= 0 && z < h)
+            if (x >= -0 && x < W - 2 && z >= 0 && z < H)
                 return true;
 
             return false;
@@ -54,42 +54,42 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
         private void CreateGeometry(GraphicsDevice device)
         {
-            w = _textureImg.Width;
-            h = _textureImg.Height;
-            Color[] texels = new Color[h * w];
+            W = _textureImg.Width;
+            H = _textureImg.Height;
+            Color[] texels = new Color[H * W];
             _textureImg.GetData<Color>(texels);
-            _vertexCount = w * h;
+            _vertexCount = W * H;
             _vScale = 0.03f;
-            heights = new float[w, h];
-            normals = new Vector3[w, h];
-            vertices = new VertexPositionNormalTexture[_vertexCount];
+            Heights = new float[W, H];
+            Normals = new Vector3[W, H];
+            _vertices = new VertexPositionNormalTexture[_vertexCount];
 
-            for (int z = 0; z < h; z++)
+            for (int z = 0; z < H; z++)
             {
-                for (int x = 0; x < h; x++)
+                for (int x = 0; x < H; x++)
                 {
-                    int pos = z * w + x;
+                    int pos = z * W + x;
                     float y = texels[pos].R * _vScale;
-                    heights[x, z] = y;
-                    normals[x, z] = Vector3.UnitY;
-                    vertices[pos] = new VertexPositionNormalTexture(new Vector3(x, y, z), Vector3.UnitY, new Vector2(x % 2, z % 2));
+                    Heights[x, z] = y;
+                    Normals[x, z] = Vector3.UnitY;
+                    _vertices[pos] = new VertexPositionNormalTexture(new Vector3(x, y, z), Vector3.UnitY, new Vector2(x % 2, z % 2));
                 }
             }
 
-            _indexCount = (w - 1) * h * 2;
+            _indexCount = (W - 1) * H * 2;
             short[] indices = new short[_indexCount];
             CalculateNormal();
 
-            for (int strip = 0; strip < w - 1; strip++)
+            for (int strip = 0; strip < W - 1; strip++)
             {
-                for (int z = 0; z < w; z++)
+                for (int z = 0; z < W; z++)
                 {
-                    indices[strip * h * 2 + z * 2 + 0] = (short)(strip + z * w + 0);
-                    indices[strip * h * 2 + z * 2 + 1] = (short)(strip + z * w + 1);
+                    indices[strip * H * 2 + z * 2 + 0] = (short)(strip + z * W + 0);
+                    indices[strip * H * 2 + z * 2 + 1] = (short)(strip + z * W + 1);
                 }
             }
             _vertexBuffer = new VertexBuffer(device, typeof(VertexPositionNormalTexture), _vertexCount, BufferUsage.None);
-            _vertexBuffer.SetData<VertexPositionNormalTexture>(vertices);
+            _vertexBuffer.SetData<VertexPositionNormalTexture>(_vertices);
 
             _indexBuffer = new IndexBuffer(device, typeof(short), _indexCount, BufferUsage.None);
             _indexBuffer.SetData<short>(indices);
@@ -98,22 +98,22 @@ namespace TrabalhoPratico_Monogame_2ano.Components
         //calculo das normais
         public void CalculateNormal()
         {
-            for (int z = 1; z < h - 1; z++)
+            for (int z = 1; z < H - 1; z++)
             {
-                for (int x = 1; x < w - 1; x++)
+                for (int x = 1; x < W - 1; x++)
                 {
                     int i;
-                    i = z * w + x;
+                    i = z * W + x;
 
-                    Vector3 p0 = vertices[i].Position;
-                    Vector3 p1 = vertices[(z - 1) * w + x].Position;
-                    Vector3 p2 = vertices[(z - 1) * w + (x - 1)].Position;
-                    Vector3 p3 = vertices[z * w + (x - 1)].Position;
-                    Vector3 p4 = vertices[(z + 1) * w + (x - 1)].Position;
-                    Vector3 p5 = vertices[(z + 1) * w + x].Position;
-                    Vector3 p6 = vertices[(z + 1) * w + (x + 1)].Position;
-                    Vector3 p7 = vertices[z * w + (x + 1)].Position;
-                    Vector3 p8 = vertices[(z - 1) * w + (x + 1)].Position;
+                    Vector3 p0 = _vertices[i].Position;
+                    Vector3 p1 = _vertices[(z - 1) * W + x].Position;
+                    Vector3 p2 = _vertices[(z - 1) * W + (x - 1)].Position;
+                    Vector3 p3 = _vertices[z * W + (x - 1)].Position;
+                    Vector3 p4 = _vertices[(z + 1) * W + (x - 1)].Position;
+                    Vector3 p5 = _vertices[(z + 1) * W + x].Position;
+                    Vector3 p6 = _vertices[(z + 1) * W + (x + 1)].Position;
+                    Vector3 p7 = _vertices[z * W + (x + 1)].Position;
+                    Vector3 p8 = _vertices[(z - 1) * W + (x + 1)].Position;
 
                     Vector3 t1 = p1 - p0;
                     Vector3 t2 = p2 - p0;
@@ -145,9 +145,9 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                     Vector3 n0 = new Vector3();
                     n0 = (n12 + n23 + n34 + n45 + n56 + n67 + n78 + n81) / 8;
                     n0.Normalize();
-                    normals[x, z] = n0;
+                    Normals[x, z] = n0;
 
-                    vertices[i].Normal = n0;
+                    _vertices[i].Normal = n0;
                 }
             }
         }
@@ -164,10 +164,10 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             int xD = xA + 1;
             int zD = zA + 1;
 
-            float yA = heights[xA, zA];
-            float yB = heights[xB, zB];
-            float yC = heights[xC, zC];
-            float yD = heights[xD, zD];
+            float yA = Heights[xA, zA];
+            float yB = Heights[xB, zB];
+            float yC = Heights[xC, zC];
+            float yD = Heights[xD, zD];
 
             float dA = x - xA;
             float dB = xB - x;
@@ -193,10 +193,10 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             int xD = xA + 1;
             int zD = zA + 1;
 
-            Vector3 normalA = normals[xA, zA];
-            Vector3 normalB = normals[xB, zB];
-            Vector3 normalC = normals[xC, zC];
-            Vector3 normalD = normals[xD, zD];
+            Vector3 normalA = Normals[xA, zA];
+            Vector3 normalB = Normals[xB, zB];
+            Vector3 normalC = Normals[xC, zC];
+            Vector3 normalD = Normals[xD, zD];
 
             float dA = x - xA;
             float dB = xB - x;
@@ -218,12 +218,12 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _effect.CurrentTechnique.Passes[0].Apply();
             device.SetVertexBuffer(_vertexBuffer);
             device.Indices = _indexBuffer;
-            w = _textureImg.Width;
-            h = _textureImg.Height;
-            int indexOffset = w + h;
+            W = _textureImg.Width;
+            H = _textureImg.Height;
+            int indexOffset = W + H;
 
-            for (int strip = 0; strip < w - 1; strip++)
-                device.DrawIndexedPrimitives(PrimitiveType.TriangleStrip, 0, strip * indexOffset, (h - 1) * 2);
+            for (int strip = 0; strip < W - 1; strip++)
+                device.DrawIndexedPrimitives(PrimitiveType.TriangleStrip, 0, strip * indexOffset, (H - 1) * 2);
         }
     }
 }

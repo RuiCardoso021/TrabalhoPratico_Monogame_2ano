@@ -12,7 +12,7 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
         private Random _random;
         private List<ClsParticleDust> _dustParticles;
         private float _radius;
-        int _particlePerSecond;
+        private int _particlePerSecond;
 
         public ClsDust(GraphicsDevice device)
         {
@@ -45,9 +45,9 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
             foreach (ClsParticleDust particulas in _dustParticles.ToArray())
             {
-                if (particulas.position.X >= 0 && particulas.position.X < terrain.w - 1 && particulas.position.Z >= 0 && particulas.position.Z < terrain.h - 1)
-                    if (particulas.position.Y <= terrain.GetY(particulas.position.X, particulas.position.Z)) _dustParticles.Remove(particulas);
-                else if (particulas.position.Y <= 0) _dustParticles.Remove(particulas);
+                if (particulas.Position.X >= 0 && particulas.Position.X < terrain.W - 1 && particulas.Position.Z >= 0 && particulas.Position.Z < terrain.H - 1)
+                    if (particulas.Position.Y <= terrain.GetY(particulas.Position.X, particulas.Position.Z)) _dustParticles.Remove(particulas);
+                else if (particulas.Position.Y <= 0) _dustParticles.Remove(particulas);
             }
         }
 
@@ -55,8 +55,8 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
         {
             if (_dustParticles.Count > 0)
             {
-                _effect.View = ClsCamera.Instance.view;
-                _effect.Projection = ClsCamera.Instance.projection;
+                _effect.View = ClsCamera.Instance.View;
+                _effect.Projection = ClsCamera.Instance.Projection;
                 _effect.World = Matrix.Identity;
 
                 VertexPositionColor[] vertices;
@@ -66,8 +66,8 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
                 for (int i = 0; i < _dustParticles.Count; i++)
                 {
-                    vertices[2 * i] = new VertexPositionColor(_dustParticles[i].position, Color.SandyBrown);
-                    vertices[2 * i + 1] = new VertexPositionColor(_dustParticles[i].position + Vector3.Normalize(_dustParticles[i].velocity) * size, Color.SandyBrown);
+                    vertices[2 * i] = new VertexPositionColor(_dustParticles[i].Position, Color.SandyBrown);
+                    vertices[2 * i + 1] = new VertexPositionColor(_dustParticles[i].Position + Vector3.Normalize(_dustParticles[i].Velocity) * size, Color.SandyBrown);
                 }
 
                 _effect.CurrentTechnique.Passes[0].Apply();

@@ -14,7 +14,7 @@ namespace TrabalhoPratico_Monogame_2ano.Collider
             this._radius = raio;
         }
 
-        public bool CollidedTank(Vector3 position, Vector3 enimyPosition)
+        public bool Collide(Vector3 position, Vector3 enimyPosition)
         {
             //calcular o ponto medio entre os dois tanks
             _x = position.X - enimyPosition.X;

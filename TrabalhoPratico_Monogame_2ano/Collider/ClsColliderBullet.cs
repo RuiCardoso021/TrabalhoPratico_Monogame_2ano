@@ -9,7 +9,7 @@ namespace TrabalhoPratico_Monogame_2ano.Collider
 
         public ClsColliderBullet(float radius)
         {
-            this._radius = radius;
+            _radius = radius;
         }
 
         public bool Collide(Vector3 posA, Vector3 posB, Vector3 posC)

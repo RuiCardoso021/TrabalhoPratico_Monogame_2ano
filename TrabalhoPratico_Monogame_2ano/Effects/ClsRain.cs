@@ -55,13 +55,13 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
             for (int i = 0; i < pariclesToGenerate; i++)
             {
                 ClsParticleRain newParticle = Generate();
-                if (terreno.TerrainLimit(newParticle.position.X, newParticle.position.Z))
+                if (terreno.TerrainLimit(newParticle.Position.X, newParticle.Position.Z))
                     _particulas.Add(newParticle);
             }
 
             //remove particula if position y = 0
             for (int i = _particulas.Count - 1; i >= 0; i--)
-                if (_particulas[i].position.Y < 0 || !(terreno.TerrainLimit(_particulas[i].position.X, _particulas[i].position.Z)))
+                if (_particulas[i].Position.Y < 0 || !(terreno.TerrainLimit(_particulas[i].Position.X, _particulas[i].Position.Z)))
                     _particulas.RemoveAt(i);
 
             //update to particulas
@@ -81,8 +81,8 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
             for (int i = 0; i < _particulas.Count; i++)
             {
-                vertices[2 * i] = new VertexPositionColor(_particulas[i].position, Color.LightBlue);
-                vertices[2 * i + 1] = new VertexPositionColor(_particulas[i].position + Vector3.Normalize(_particulas[i].velocity) * size, Color.LightBlue);
+                vertices[2 * i] = new VertexPositionColor(_particulas[i].Position, Color.LightBlue);
+                vertices[2 * i + 1] = new VertexPositionColor(_particulas[i].Position + Vector3.Normalize(_particulas[i].Velocity) * size, Color.LightBlue);
             }
             _effect.CurrentTechnique.Passes[0].Apply();
 

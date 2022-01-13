@@ -2,7 +2,7 @@
 
 namespace TrabalhoPratico_Monogame_2ano.Effects
 {
-    class ClsSoundEffect
+    internal class ClsSoundEffect
     {
         private SoundEffectInstance _soundEffectInstance;
         private bool _loop;
@@ -26,7 +26,6 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
         public void PlayWithLoop()
         {
             _soundEffectInstance.Play();
-            
         }
     }
 }

@@ -16,8 +16,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
         public ClsBullet(Model bulletModel, Vector3 tankPosition, Vector3 tankDirection)
         {
-            this._bulletModel = bulletModel;
-            this.Position = tankPosition;
+            _bulletModel = bulletModel;
+            Position = tankPosition;
 
             _velocity = tankDirection;
             _velocity.Normalize();
@@ -31,10 +31,10 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _velocity += Vector3.Down * _gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
             Position += _velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            Matrix escala = Matrix.CreateScale(_scale);
-            Matrix translacao = Matrix.CreateTranslation(Position);
+            Matrix scale = Matrix.CreateScale(_scale);
+            Matrix translation = Matrix.CreateTranslation(Position);
 
-            _world = escala * translacao;
+            _world = scale * translation;
         }
 
         public void Draw()
@@ -44,8 +44,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.World = _world;
-                    effect.View = ClsCamera.Instance.view;
-                    effect.Projection = ClsCamera.Instance.projection;
+                    effect.View = ClsCamera.Instance.View;
+                    effect.Projection = ClsCamera.Instance.Projection;
                     effect.EnableDefaultLighting();
                 }
                 mesh.Draw();

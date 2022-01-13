@@ -9,7 +9,7 @@ namespace TrabalhoPratico_Monogame_2ano
 {
     internal abstract class ClsCamera
     {
-        protected Vector3 _pos; // sprite posicao on screen
+        protected Vector3 _posititon; // sprite posicao on screen
         protected int _screenW, _screenH;
         protected float _pitch;
         protected float _yaw;
@@ -18,7 +18,7 @@ namespace TrabalhoPratico_Monogame_2ano
         protected ClsKeyboardManager _kbManager;
 
         public static ClsCamera Instance;
-        public Matrix view, projection;
+        public Matrix View, Projection;
 
         public ClsCamera(GraphicsDevice device)
         {
@@ -26,8 +26,8 @@ namespace TrabalhoPratico_Monogame_2ano
             _screenH = device.Viewport.Height;
             _screenW = device.Viewport.Width;
             float aspectRatio = (float)device.Viewport.Width / device.Viewport.Height;
-            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(60f), aspectRatio, 0.1f, 1000f);
-            _pos = new Vector3(64f, 20f, 64f);
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(60f), aspectRatio, 0.1f, 1000f);
+            _posititon = new Vector3(64f, 20f, 64f);
             _pitch = 0;
             _yaw = 0;
             _verticalOffset = 5f;
@@ -42,9 +42,9 @@ namespace TrabalhoPratico_Monogame_2ano
         {
             MouseState ms = Mouse.GetState();
             Vector2 mouseOffset = ms.Position.ToVector2() - new Vector2(_screenW / 2, _screenH / 2);
-            float radianosPorPixel = MathHelper.ToRadians(0.1f);
-            _yaw = _yaw - mouseOffset.X * radianosPorPixel;
-            _pitch = _pitch + mouseOffset.Y * radianosPorPixel;
+            float radiansPerPixel = MathHelper.ToRadians(0.1f);
+            _yaw = _yaw - mouseOffset.X * radiansPerPixel;
+            _pitch = _pitch + mouseOffset.Y * radiansPerPixel;
 
             //limitar camara para nao inverter
             _pitch = _kbManager.LimitAngle(_pitch, 85f, 85f);

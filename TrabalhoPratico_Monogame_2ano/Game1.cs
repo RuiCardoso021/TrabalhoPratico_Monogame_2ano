@@ -11,7 +11,7 @@ namespace TrabalhoPratico_Monogame_2ano
     {
         private GraphicsDeviceManager _graphics;
         private ClsTerrain _terrain;
-        public ClsTank _tank, _tankEnemy;
+        private ClsTank _tank, _tankEnemy;
         private ClsRain _effectRain;
         private ClsSoundEffect _soundRain;
 
@@ -31,11 +31,11 @@ namespace TrabalhoPratico_Monogame_2ano
         {
             Mouse.SetPosition(_graphics.GraphicsDevice.Viewport.Width / 2, _graphics.GraphicsDevice.Viewport.Height / 2);
             _terrain = new ClsTerrain(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("sand"));
-            _tank = new ClsTank(_graphics.GraphicsDevice, this,  Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f), false, new Keys[] { Keys.A, Keys.W, Keys.D, Keys.S, Keys.Q, Keys.E, Keys.F, Keys.H, Keys.T, Keys.G, Keys.LeftShift, Keys.Space });
-            _tankEnemy = new ClsTank(_graphics.GraphicsDevice,this, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f), true, new Keys[] { Keys.J, Keys.I, Keys.L, Keys.K, Keys.N, Keys.M, Keys.Left, Keys.Right, Keys.Up, Keys.Down, Keys.RightShift, Keys.Enter });
+            _tank = new ClsTank(_graphics.GraphicsDevice, this, Content.Load<Model>("tank"), new Vector3(50f, 0f, 40f), false, new Keys[] { Keys.A, Keys.W, Keys.D, Keys.S, Keys.Q, Keys.E, Keys.F, Keys.H, Keys.T, Keys.G, Keys.LeftShift, Keys.Space });
+            _tankEnemy = new ClsTank(_graphics.GraphicsDevice, this, Content.Load<Model>("tank"), new Vector3(64f, 0f, 64f), true, new Keys[] { Keys.J, Keys.I, Keys.L, Keys.K, Keys.N, Keys.M, Keys.Left, Keys.Right, Keys.Up, Keys.Down, Keys.RightShift, Keys.Enter });
             _effectRain = new ClsRain(GraphicsDevice);
             _soundRain = new ClsSoundEffect(Content.Load<SoundEffect>("SoundEffect/rain"), 0.03f);
-            
+
             ClsCamera.CreateCamera(_graphics.GraphicsDevice);
         }
 
@@ -54,11 +54,11 @@ namespace TrabalhoPratico_Monogame_2ano
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.DarkGray);           
-            _effectRain.Draw(ClsCamera.Instance.view, ClsCamera.Instance.projection);
-            _terrain.Draw(_graphics.GraphicsDevice, ClsCamera.Instance.view, ClsCamera.Instance.projection);
-            _tank.Draw(_graphics.GraphicsDevice, ClsCamera.Instance.view, ClsCamera.Instance.projection, Vector3.Zero);
-            _tankEnemy.Draw(_graphics.GraphicsDevice, ClsCamera.Instance.view, ClsCamera.Instance.projection, Vector3.UnitX);
+            GraphicsDevice.Clear(Color.DarkGray);
+            _effectRain.Draw(ClsCamera.Instance.View, ClsCamera.Instance.Projection);
+            _terrain.Draw(_graphics.GraphicsDevice, ClsCamera.Instance.View, ClsCamera.Instance.Projection);
+            _tank.Draw(_graphics.GraphicsDevice, ClsCamera.Instance.View, ClsCamera.Instance.Projection, Vector3.Zero);
+            _tankEnemy.Draw(_graphics.GraphicsDevice, ClsCamera.Instance.View, ClsCamera.Instance.Projection, Vector3.UnitX);
             base.Draw(gameTime);
         }
     }

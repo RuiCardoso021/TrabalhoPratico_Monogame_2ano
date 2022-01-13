@@ -22,12 +22,12 @@ namespace TrabalhoPratico_Monogame_2ano.Camara
             float speed = 20f;
 
             //direcao da camara
-            _pos = _kbManager.MovimentWithPosition(_pos, right, speed, Keys.NumPad6, Keys.NumPad4, gametime);      //esquerda e direita
-            _pos = _kbManager.MovimentWithPosition(_pos, direction, speed, Keys.NumPad8, Keys.NumPad5, gametime);  //frente e traz
-            _pos = _kbManager.MovimentWithPosition(_pos, up, speed, Keys.NumPad7, Keys.NumPad1, gametime);      //cima e baixo
+            _posititon = _kbManager.MovimentWithPosition(_posititon, right, speed, Keys.NumPad6, Keys.NumPad4, gametime);      //esquerda e direita
+            _posititon = _kbManager.MovimentWithPosition(_posititon, direction, speed, Keys.NumPad8, Keys.NumPad5, gametime);  //frente e traz
+            _posititon = _kbManager.MovimentWithPosition(_posititon, up, speed, Keys.NumPad7, Keys.NumPad1, gametime);      //cima e baixo
 
-            Vector3 target = _pos + direction;
-            view = Matrix.CreateLookAt(_pos, target, up);
+            Vector3 target = _posititon + direction;
+            View = Matrix.CreateLookAt(_posititon, target, up);
 
             Mouse.SetPosition(_screenW / 2, _screenH / 2);
         }
