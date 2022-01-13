@@ -326,15 +326,11 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             //rotation wheels
             _yaw_wheel += MathHelper.ToRadians(_vel);
 
-            if (!(position.X >= 3 && position.X < terrain.w - 3 && position.Z >= 3 && position.Z < terrain.h - 3))
-                _yaw += MathHelper.ToRadians(new Random().Next(1, 7));
-
-            Matrix rotation = Matrix.CreateFromYawPitchRoll(_yaw, 0f, 0f);
-
             //valida o raio para começar a perseguição
-            if (!LimitRadius(otherTank.position, position, 15f))
+            if (!LimitRadius(otherTank.position, position, 15f) || 
+                !(position.X >= 3 && position.X < terrain.w - 3 && position.Z >= 3 && position.Z < terrain.h - 3))
                 Pursuite(otherTank, gameTime);
-
+            
             position = position + direction * _vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
             Vector3 right = Vector3.Cross(direction, normal);
             Vector3 correctedDirection = Vector3.Cross(normal, right);
