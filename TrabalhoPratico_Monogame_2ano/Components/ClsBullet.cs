@@ -5,8 +5,8 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 {
     internal class ClsBullet
     {
-        private float _gravity = 7.5f;
-        private float _scale = 0.2f;
+        private float _gravity = 9.4f;
+        private float _scale = 0.005f;
         private Model _bulletModel;
         private Vector3 _velocity;
         private Matrix _world;

@@ -248,7 +248,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
                 {
                     for (int i = 0; i < 1; i++)
                     {
-                        _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), CannonPosition, CannonDirection);
+                        _bullet = new ClsBullet(game.Content.Load<Model>("pokeball"), CannonPosition, CannonDirection);
                         _bulletList.Add(_bullet);
                         new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/shot"), 0.3f).PlayWithLoop();
                     }
@@ -268,7 +268,7 @@ namespace TrabalhoPratico_Monogame_2ano.Components
 
                     for (int i = 0; i < 1; i++)
                     {
-                        _bullet = new ClsBullet(game.Content.Load<Model>("Sphere"), CannonPosition, CannonDirection);
+                        _bullet = new ClsBullet(game.Content.Load<Model>("pokeball"), CannonPosition, CannonDirection);
                         _bulletList.Add(_bullet);
                         new ClsSoundEffect(game.Content.Load<SoundEffect>("SoundEffect/shot"), 0.3f).PlayWithLoop();
                     }

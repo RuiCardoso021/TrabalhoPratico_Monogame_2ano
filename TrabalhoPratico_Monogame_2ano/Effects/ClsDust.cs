@@ -33,10 +33,12 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
             {
                 for (int i = 0; i < pariclesToGenerate; i++)
                 {
-                    Vector3 particlePosition = new Vector3(wheelPosition.X + (_radius * (float)_random.NextDouble() - (_radius / 2)), wheelPosition.Y, 
-                        wheelPosition.Z + (_radius * (float)_random.NextDouble() - (_radius / 2)));
-                    ClsParticleDust particle = new ClsParticleDust(particlePosition, new Vector3(_radius * (float)_random.NextDouble() - (_radius / 2), 6f, 
-                        _radius * (float)_random.NextDouble() - (_radius / 2)));
+                    float posX = wheelPosition.X + (_radius * (float)_random.NextDouble() - (_radius / 2));
+                    float posZ = wheelPosition.Z + (_radius * (float)_random.NextDouble() - (_radius / 2));
+                    Vector3 particlePosition = new Vector3(posX, wheelPosition.Y, posZ);
+                    posX = _radius * (float)_random.NextDouble() - (_radius / 2);
+                    posZ = _radius * (float)_random.NextDouble() - (_radius / 2);
+                    ClsParticleDust particle = new ClsParticleDust(particlePosition, new Vector3(posX, 6f, posZ));
                     _dustParticles.Add(particle);
                 }
             }
