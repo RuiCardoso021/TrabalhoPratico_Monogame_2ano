@@ -9,14 +9,13 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 
         public ClsParticleDust(Vector3 position, Vector3 velocity)
         {
-            this.Position = position;
-            this.Velocity = velocity;
+            Position = position;
+            Velocity = velocity;
         }
 
         public void Update(GameTime gameTime, Vector3 gravity)
         {
             Velocity += gravity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
             Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
     }

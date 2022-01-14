@@ -33,21 +33,23 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
             {
                 for (int i = 0; i < pariclesToGenerate; i++)
                 {
-                    Vector3 particlePosition = new Vector3(wheelPosition.X + (_radius * (float)_random.NextDouble() - (_radius / 2)), wheelPosition.Y, wheelPosition.Z + (_radius * (float)_random.NextDouble() - (_radius / 2)));
-                    ClsParticleDust particle = new ClsParticleDust(particlePosition, new Vector3(_radius * (float)_random.NextDouble() - (_radius / 2), 6f, _radius * (float)_random.NextDouble() - (_radius / 2)));
+                    Vector3 particlePosition = new Vector3(wheelPosition.X + (_radius * (float)_random.NextDouble() - (_radius / 2)), wheelPosition.Y, 
+                        wheelPosition.Z + (_radius * (float)_random.NextDouble() - (_radius / 2)));
+                    ClsParticleDust particle = new ClsParticleDust(particlePosition, new Vector3(_radius * (float)_random.NextDouble() - (_radius / 2), 6f, 
+                        _radius * (float)_random.NextDouble() - (_radius / 2)));
                     _dustParticles.Add(particle);
                 }
             }
 
-            foreach (ClsParticleDust particulas in _dustParticles)
-                particulas.Update(gameTime, gravity);
+            foreach (ClsParticleDust particle in _dustParticles)
+                particle.Update(gameTime, gravity);
             
 
-            foreach (ClsParticleDust particulas in _dustParticles.ToArray())
+            foreach (ClsParticleDust particle in _dustParticles.ToArray())
             {
-                if (particulas.Position.X >= 0 && particulas.Position.X < terrain.W - 1 && particulas.Position.Z >= 0 && particulas.Position.Z < terrain.H - 1)
-                    if (particulas.Position.Y <= terrain.GetY(particulas.Position.X, particulas.Position.Z)) _dustParticles.Remove(particulas);
-                else if (particulas.Position.Y <= 0) _dustParticles.Remove(particulas);
+                if (particle.Position.X >= 0 && particle.Position.X < terrain.W - 1 && particle.Position.Z >= 0 && particle.Position.Z < terrain.H - 1)
+                    if (particle.Position.Y <= terrain.GetY(particle.Position.X, particle.Position.Z)) _dustParticles.Remove(particle);
+                else if (particle.Position.Y <= 0) _dustParticles.Remove(particle);
             }
         }
 

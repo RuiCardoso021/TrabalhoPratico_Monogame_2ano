@@ -8,7 +8,7 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
 {
     class ClsRain
     {
-        private List<ClsParticleRain> _particulas;
+        private List<ClsParticleRain> _particles;
         private Random _random;
         private BasicEffect _effect;
         private GraphicsDevice _device;
@@ -19,7 +19,7 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
         public ClsRain(GraphicsDevice device)
         {
             _random = new Random();
-            _particulas = new List<ClsParticleRain>();
+            _particles = new List<ClsParticleRain>();
             _device = device;
             _heigth = 100;
             _radius = 230;
@@ -46,7 +46,7 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
         }
 
 
-        public void Update(GameTime gameTime, ClsTerrain terreno)
+        public void Update(GameTime gameTime, ClsTerrain terrain)
         {
 
             int pariclesToGenerate = (int)(Math.Round(_particlePerSecond * (float)gameTime.ElapsedGameTime.TotalMilliseconds));
@@ -55,18 +55,18 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
             for (int i = 0; i < pariclesToGenerate; i++)
             {
                 ClsParticleRain newParticle = Generate();
-                if (terreno.TerrainLimit(newParticle.Position.X, newParticle.Position.Z))
-                    _particulas.Add(newParticle);
+                if (terrain.TerrainLimit(newParticle.Position.X, newParticle.Position.Z))
+                    _particles.Add(newParticle);
             }
 
             //remove particula if position y = 0
-            for (int i = _particulas.Count - 1; i >= 0; i--)
-                if (_particulas[i].Position.Y < 0 || !(terreno.TerrainLimit(_particulas[i].Position.X, _particulas[i].Position.Z)))
-                    _particulas.RemoveAt(i);
+            for (int i = _particles.Count - 1; i >= 0; i--)
+                if (_particles[i].Position.Y < 0 || !(terrain.TerrainLimit(_particles[i].Position.X, _particles[i].Position.Z)))
+                    _particles.RemoveAt(i);
 
             //update to particulas
-            foreach (ClsParticleRain particula in _particulas)
-                particula.Update(gameTime);
+            foreach (ClsParticleRain particle in _particles)
+                particle.Update(gameTime);
 
         }
 
@@ -75,18 +75,18 @@ namespace TrabalhoPratico_Monogame_2ano.Effects
             _effect.View = view;
             _effect.Projection = projection;
 
-            VertexPositionColor[] vertices = new VertexPositionColor[2 * _particulas.Count];
+            VertexPositionColor[] vertices = new VertexPositionColor[2 * _particles.Count];
 
             float size = 0.5f;
 
-            for (int i = 0; i < _particulas.Count; i++)
+            for (int i = 0; i < _particles.Count; i++)
             {
-                vertices[2 * i] = new VertexPositionColor(_particulas[i].Position, Color.LightBlue);
-                vertices[2 * i + 1] = new VertexPositionColor(_particulas[i].Position + Vector3.Normalize(_particulas[i].Velocity) * size, Color.LightBlue);
+                vertices[2 * i] = new VertexPositionColor(_particles[i].Position, Color.LightBlue);
+                vertices[2 * i + 1] = new VertexPositionColor(_particles[i].Position + Vector3.Normalize(_particles[i].Velocity) * size, Color.LightBlue);
             }
             _effect.CurrentTechnique.Passes[0].Apply();
 
-            _device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.LineList, vertices, 0, _particulas.Count);
+            _device.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.LineList, vertices, 0, _particles.Count);
         }
     }
 }

@@ -9,9 +9,9 @@ namespace TrabalhoPratico_Monogame_2ano.Collider
         private float _x, _y, _z;
         private float _distance;
 
-        public ClsColliderTanks(float raio)
+        public ClsColliderTanks(float radius)
         {
-            this._radius = raio;
+            _radius = radius;
         }
 
         public bool Collide(Vector3 position, Vector3 enimyPosition)
