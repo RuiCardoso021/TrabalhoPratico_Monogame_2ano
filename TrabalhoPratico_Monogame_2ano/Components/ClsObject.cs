@@ -4,7 +4,7 @@ using System;
 
 namespace TrabalhoPratico_Monogame_2ano.Components
 {
-    class ClsObject
+    internal class ClsObject
     {
         private ClsTerrain _terrain;
         private Model _texture;
@@ -18,12 +18,13 @@ namespace TrabalhoPratico_Monogame_2ano.Components
             _texture = texture;
             _position = new Vector3(r.Next(2, 120), 0, r.Next(2, 120));
             _position.Y = _terrain.GetY(_position.X, _position.Z);
+
             Matrix scale = Matrix.CreateScale(0.008f);
-            Matrix translation = Matrix.CreateTranslation(_position);                              //movimento tank, esq, dir
+            Matrix translation = Matrix.CreateTranslation(_position);
+
             _position = _terrain.GetNormal(_position.X, _position.Z);
             _position.Y = _terrain.GetY(_position.X, _position.Z);
-            _world = scale *translation;
-
+            _world = scale * translation;
         }
 
         public void Draw()
